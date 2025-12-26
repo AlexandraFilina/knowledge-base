@@ -51,14 +51,10 @@ export default function ProjectsPage() {
   >(undefined);
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
-    const tagsArray = data.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t: string) => t !== "");
     const newProject = {
       id: Date.now(),
       ...data,
-      tags: tagsArray,
+      tags: data.tags,
       image: projectJPG,
     };
     setIsOpen(false);
@@ -67,10 +63,6 @@ export default function ProjectsPage() {
   };
 
   const handleEditProject = (data: IProjectFormValues) => {
-    const tagsArray = data.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t: string) => t !== "");
     setProjects(
       projects.map((p) =>
         p.id === editingId
@@ -78,7 +70,7 @@ export default function ProjectsPage() {
               ...p,
               title: data.title,
               description: data.description,
-              tags: tagsArray,
+              tags: data.tags,
             }
           : p
       )
@@ -99,7 +91,7 @@ export default function ProjectsPage() {
     setCurrentProject({
       title: project.title,
       description: project.description,
-      tags: project.tags.join(", "),
+      tags: project.tags,
     });
     setIsOpen(true);
   };
