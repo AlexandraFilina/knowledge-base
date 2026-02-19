@@ -36,6 +36,7 @@ export default function ProjectsPage() {
               title: data.title,
               description: data.description,
               tags: data.tags,
+              progress: data.progress,
             }
           : p
       )
@@ -57,6 +58,7 @@ export default function ProjectsPage() {
       title: project.title,
       description: project.description,
       tags: project.tags,
+      progress: project.progress,
     });
     setIsOpen(true);
   };

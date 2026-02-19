@@ -4,4 +4,5 @@ export interface IProject {
   description: string;
   image: string;
   tags: string[];
+  progress: number;
 }

@@ -21,11 +21,18 @@ export default function ProjectDialog({
   isOpen,
   onClose,
 }: IProjectDialogProps) {
-  const { register, handleSubmit, reset, watch, setValue } =
-    useForm<IProjectFormValues>({
-      defaultValues: defaultValues,
-      values: defaultValues,
-    });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<IProjectFormValues>({
+    defaultValues: defaultValues,
+    values: defaultValues,
+    mode: "onChange",
+  });
 
   useEffect(() => {
     register("tags");
@@ -35,12 +42,14 @@ export default function ProjectDialog({
 
   useEffect(() => {
     if (isOpen) {
-      reset(defaultValues || { title: "", description: "", tags: [] });
+      reset(
+        defaultValues || { title: "", description: "", tags: [], progress: 0 }
+      );
     }
   }, [isOpen, defaultValues, reset]);
 
   const handleTagsChange = (value: string[]) => {
-    setValue("tags", value);
+    setValue("tags", value, { shouldValidate: true, shouldDirty: true });
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -66,9 +75,20 @@ export default function ProjectDialog({
 
               <input
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-gray-400 bg-gray-50/50 resize-none"
-                {...register("title", { required: true })}
+                {...register("title", {
+                  required: "Title is required",
+                  minLength: {
+                    value: 2,
+                    message: "Title must be at least 2 characters",
+                  },
+                })}
                 placeholder="e.g. History Exam Preparation"
               />
+              {errors.title && (
+                <span className="text-sm text-red-500 ml-1">
+                  {errors.title.message}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-600 ml-1">
@@ -76,11 +96,50 @@ export default function ProjectDialog({
               </label>
 
               <textarea
-                {...register("description")}
+                {...register("description", {
+                  required: "Description is required",
+                  minLength: {
+                    value: 5,
+                    message: "Description must be at least 5 characters",
+                  },
+                })}
                 placeholder="Reviewing major events of the 20th century..."
                 rows={4}
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-gray-400 bg-gray-50/50 resize-none"
               />
+              {errors.description && (
+                <span className="text-sm text-red-500 ml-1">
+                  {errors.description.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-gray-600 ml-1">
+                Progress
+              </label>
+
+              <input
+                type="number"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-gray-400 bg-gray-50/50 resize-none"
+                {...register("progress", {
+                  required: "Progress is required",
+                  min: {
+                    value: 0,
+                    message: "Progress must be at least 0",
+                  },
+                  max: {
+                    value: 100,
+                    message: "Progress cannot exceed 100",
+                  },
+                  valueAsNumber: true,
+                })}
+                placeholder="0-100"
+              />
+              {errors.progress && (
+                <span className="text-sm text-red-500 ml-1">
+                  {errors.progress.message}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-600 ml-1">
@@ -103,8 +162,9 @@ export default function ProjectDialog({
               </button>
 
               <button
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={!isValid || isSubmitting}
               >
                 {buttonText}
               </button>
