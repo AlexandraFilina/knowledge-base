@@ -1,48 +1,13 @@
 import "./ProjectsPage.css";
 import ProjectCardComponent from "../../features/project/components/ProjectCardComponent/ProjectCardComponent";
-import projectJPG from "../../../src/card.jpg";
 import { useState } from "react";
 import { IProject } from "../../features/project/interfaces/IProject";
 import { IProjectFormValues } from "../../features/project/interfaces/IProjectFormValues";
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
-
-const initialData: IProject[] = [
-  {
-    id: 1,
-    title: "The Industrial Revolution",
-    description:
-      "Study of the transition to new manufacturing processes in Europe and the US, focusing on social and economic impacts.",
-    image: projectJPG,
-    tags: ["history", "midterm", "social-science"],
-  },
-  {
-    id: 2,
-    title: "Cellular Biology Fundamentals",
-    description:
-      "Deep dive into cell structure, organelles, and the process of mitosis and meiosis for the upcoming finals.",
-    image: projectJPG,
-    tags: ["biology", "science", "exam-prep"],
-  },
-  {
-    id: 3,
-    title: "Macroeconomics: GDP & Inflation",
-    description:
-      "Analyzing the relationship between national output and price levels. Includes calculation methods and fiscal policy impacts.",
-    image: projectJPG,
-    tags: ["economics", "university", "theory"],
-  },
-  {
-    id: 4,
-    title: "Introduction to AI Ethics",
-    description:
-      "Exploring the moral implications of artificial intelligence, bias in algorithms, and the future of automation in society.",
-    image: projectJPG,
-    tags: ["technology", "philosophy", "essay-project"],
-  },
-];
+import { mockProjects } from "../../features/project/constants/mockProjects";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<IProject[]>(initialData);
+  const [projects, setProjects] = useState<IProject[]>(mockProjects);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -51,11 +16,11 @@ export default function ProjectsPage() {
   >(undefined);
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
-    const newProject = {
+    const newProject: IProject = {
       id: Date.now(),
       ...data,
       tags: data.tags,
-      image: projectJPG,
+      image: mockProjects[0]?.image || "",
     };
     setIsOpen(false);
     setProjects([newProject, ...projects]);
