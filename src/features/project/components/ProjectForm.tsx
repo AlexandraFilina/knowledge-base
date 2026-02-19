@@ -35,7 +35,6 @@ export default function ProjectForm({
 
   const tagsArray = watch("tags", defaultValues?.tags);
 
-  // Reset form when isOpen changes to true or defaultValues change
   useEffect(() => {
     if (isOpen) {
       reset(
