@@ -1,13 +1,37 @@
 import "./ProjectsPage.css";
 import ProjectCardComponent from "../../features/project/components/ProjectCardComponent/ProjectCardComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IProject } from "../../features/project/interfaces/IProject";
 import { IProjectFormValues } from "../../features/project/interfaces/IProjectFormValues";
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
 import { mockProjects } from "../../features/project/constants/mockProjects";
 
+const STORAGE_KEY = "projects.v1";
+
+function isValidProject(item: unknown): item is IProject {
+  if (!item || typeof item !== "object") return false;
+  const proj = item as Record<string, unknown>;
+  return (
+    typeof proj.id === "number" &&
+    typeof proj.title === "string" &&
+    typeof proj.description === "string"
+  );
+}
+
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<IProject[]>(mockProjects);
+  const [projects, setProjects] = useState<IProject[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return mockProjects;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return mockProjects;
+      if (!parsed.every(isValidProject)) return mockProjects;
+      return parsed;
+    } catch {
+      return mockProjects;
+    }
+  });
+
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -15,9 +39,27 @@ export default function ProjectsPage() {
     IProjectFormValues | undefined
   >(undefined);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    } catch {
+      // Storage might be full or disabled
+    }
+  }, [projects]);
+
+  const handleReset = () => {
+    if (
+      window.confirm("Reset all projects to defaults? This cannot be undone.")
+    ) {
+      localStorage.removeItem(STORAGE_KEY);
+      setProjects(mockProjects);
+    }
+  };
+
   const handleSaveNewProject = (data: IProjectFormValues) => {
+    const maxId = projects.reduce((max, p) => Math.max(max, p.id), 0);
     const newProject: IProject = {
-      id: Date.now(),
+      id: maxId + 1,
       ...data,
       tags: data.tags,
       image: mockProjects[0]?.image || "",
@@ -70,12 +112,18 @@ export default function ProjectsPage() {
 
   return (
     <div className="p-10 relative">
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-8 gap-4">
         <button
           onClick={() => onClickAdd()}
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg"
         >
           + Create theme
+        </button>
+        <button
+          onClick={handleReset}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
+        >
+          Reset to defaults
         </button>
       </div>
 
