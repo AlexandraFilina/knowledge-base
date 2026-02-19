@@ -3,21 +3,21 @@ import { useEffect } from "react";
 import { IProjectFormValues } from "../interfaces/IProjectFormValues";
 import ChipsInput from "../../../ui/chips-input/ChipsInput";
 
-export interface IProjectFormProps {
+export interface ProjectFormProps {
+  isOpen: boolean;
   defaultValues?: IProjectFormValues;
-  onSave: (data: IProjectFormValues) => void;
-  buttonText: string;
-  onClose: () => void;
-  resetKey?: number;
+  submitText: string;
+  onSubmit: (data: IProjectFormValues) => void;
+  onCancel: () => void;
 }
 
 export default function ProjectForm({
+  isOpen,
   defaultValues,
-  onSave,
-  buttonText,
-  onClose,
-  resetKey,
-}: IProjectFormProps) {
+  submitText,
+  onSubmit,
+  onCancel,
+}: ProjectFormProps) {
   const {
     register,
     handleSubmit,
@@ -26,8 +26,6 @@ export default function ProjectForm({
     setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm<IProjectFormValues>({
-    defaultValues: defaultValues,
-    values: defaultValues,
     mode: "onChange",
   });
 
@@ -37,18 +35,21 @@ export default function ProjectForm({
 
   const tagsArray = watch("tags", defaultValues?.tags);
 
+  // Reset form when isOpen changes to true or defaultValues change
   useEffect(() => {
-    reset(
-      defaultValues || { title: "", description: "", tags: [], progress: 0 }
-    );
-  }, [resetKey, defaultValues, reset]);
+    if (isOpen) {
+      reset(
+        defaultValues || { title: "", description: "", tags: [], progress: 0 }
+      );
+    }
+  }, [isOpen, defaultValues, reset]);
 
   const handleTagsChange = (value: string[]) => {
     setValue("tags", value, { shouldValidate: true, shouldDirty: true });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-semibold text-gray-600 ml-1">
           Project Name
@@ -131,7 +132,7 @@ export default function ProjectForm({
       <div className="flex gap-3 mt-2">
         <button
           type="button"
-          onClick={onClose}
+          onClick={onCancel}
           className="flex-1 px-6 py-3 rounded-xl font-semibold text-gray-500 hover:bg-gray-100 transition"
         >
           Cancel
@@ -142,7 +143,7 @@ export default function ProjectForm({
           type="submit"
           disabled={!isValid || isSubmitting}
         >
-          {buttonText}
+          {submitText}
         </button>
       </div>
     </form>

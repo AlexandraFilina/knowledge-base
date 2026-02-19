@@ -1,7 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { IProjectFormValues } from "../../interfaces/IProjectFormValues";
 import ProjectForm from "../../components/ProjectForm";
-import { useState, useEffect } from "react";
 
 export interface IProjectDialogProps {
   title: string;
@@ -20,18 +19,15 @@ export default function ProjectDialog({
   isOpen,
   onClose,
 }: IProjectDialogProps) {
-  const [resetKey, setResetKey] = useState(0);
-
-  useEffect(() => {
-    if (isOpen) {
-      setResetKey((prev) => prev + 1);
-    }
-  }, [isOpen, defaultValues]);
-
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       onClose();
     }
+  };
+
+  const handleSubmit = (data: IProjectFormValues) => {
+    onSave(data);
+    onClose();
   };
 
   return (
@@ -44,11 +40,11 @@ export default function ProjectDialog({
           </Dialog.Title>
 
           <ProjectForm
+            isOpen={isOpen}
             defaultValues={defaultValues}
-            onSave={onSave}
-            buttonText={buttonText}
-            onClose={onClose}
-            resetKey={resetKey}
+            submitText={buttonText}
+            onSubmit={handleSubmit}
+            onCancel={onClose}
           />
 
           <Dialog.Close asChild>
