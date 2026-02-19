@@ -5,32 +5,13 @@ import { IProject } from "../../features/project/interfaces/IProject";
 import { IProjectFormValues } from "../../features/project/interfaces/IProjectFormValues";
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
 import { mockProjects } from "../../features/project/constants/mockProjects";
-
-const STORAGE_KEY = "projects.v1";
-
-function isValidProject(item: unknown): item is IProject {
-  if (!item || typeof item !== "object") return false;
-  const proj = item as Record<string, unknown>;
-  return (
-    typeof proj.id === "number" &&
-    typeof proj.title === "string" &&
-    typeof proj.description === "string"
-  );
-}
+import {
+  loadProjects,
+  saveProjects,
+} from "../../features/project/utils/projectsStorage";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<IProject[]>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return mockProjects;
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return mockProjects;
-      if (!parsed.every(isValidProject)) return mockProjects;
-      return parsed;
-    } catch {
-      return mockProjects;
-    }
-  });
+  const [projects, setProjects] = useState<IProject[]>(() => loadProjects());
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,18 +21,14 @@ export default function ProjectsPage() {
   >(undefined);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    } catch {
-      // Storage might be full or disabled
-    }
+    saveProjects(projects);
   }, [projects]);
 
   const handleReset = () => {
     if (
       window.confirm("Reset all projects to defaults? This cannot be undone.")
     ) {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem("projects.v1");
       setProjects(mockProjects);
     }
   };
@@ -146,6 +123,7 @@ export default function ProjectsPage() {
             </div>
 
             <ProjectCardComponent
+              id={item.id}
               title={item.title}
               description={item.description}
               image={item.image}
