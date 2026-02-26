@@ -7,6 +7,7 @@ interface IProjectProps {
   description: string;
   image: string;
   tags: string[];
+  progress?: number;
 }
 
 export default function ProjectCardComponent({
@@ -15,8 +16,10 @@ export default function ProjectCardComponent({
   description,
   image,
   tags,
+  progress = 0,
 }: IProjectProps) {
   const navigate = useNavigate();
+  const clampedProgress = Math.min(100, Math.max(0, progress));
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white">
@@ -25,7 +28,21 @@ export default function ProjectCardComponent({
         <div className="font-bold text-xl mb-2">{title}</div>
         <p className="text-gray-700 text-base">{description}</p>
       </div>
-      <div className="flex flex-wrap gap-2 px-6 py-4 justify-center">
+      <div className="px-6 pb-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs font-medium text-gray-500">Progress</span>
+          <span className="text-xs font-medium text-gray-500">
+            {clampedProgress}%
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div
+            className="bg-indigo-600 h-1.5 rounded-full transition-all duration-300"
+            style={{ width: `${clampedProgress}%` }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 px-6 py-2 justify-center">
         {tags.map((tag) => (
           <span
             key={tag}

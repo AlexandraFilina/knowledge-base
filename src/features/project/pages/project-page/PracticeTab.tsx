@@ -1,0 +1,302 @@
+import { useState } from "react";
+import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+
+interface PracticeTabProps {
+  projectId: number;
+  quizzes: IQuiz[];
+  onCreateQuiz: (
+    title: string,
+    question: string,
+    options: string[],
+    correctIndex: number
+  ) => void;
+}
+
+export function PracticeTab({
+  projectId,
+  quizzes,
+  onCreateQuiz,
+}: PracticeTabProps) {
+  const [showQuizForm, setShowQuizForm] = useState(false);
+  const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+
+  const projectQuizzes = quizzes.filter((q) => q.projectId === projectId);
+
+  if (activeQuizId) {
+    const quiz = quizzes.find((q) => q.id === activeQuizId);
+    if (quiz) {
+      return (
+        <QuizPlayingView
+          quiz={quiz}
+          selectedOption={selectedOption}
+          setSelectedOption={setSelectedOption}
+          showResult={showResult}
+          setShowResult={setShowResult}
+          onBack={() => {
+            setActiveQuizId(null);
+            setSelectedOption(null);
+            setShowResult(false);
+          }}
+        />
+      );
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Practice</h2>
+
+      {!showQuizForm ? (
+        <button
+          onClick={() => setShowQuizForm(true)}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition mb-4"
+        >
+          Create Quiz
+        </button>
+      ) : (
+        <AddQuizForm
+          onAdd={onCreateQuiz}
+          onCancel={() => setShowQuizForm(false)}
+        />
+      )}
+
+      {projectQuizzes.length === 0 ? (
+        <p className="text-gray-500">No quizzes yet</p>
+      ) : (
+        <ul className="space-y-2">
+          {projectQuizzes.map((quiz) => (
+            <li
+              key={quiz.id}
+              className="p-3 bg-gray-50 rounded-lg text-gray-700 flex justify-between items-center"
+            >
+              <span>{quiz.title}</span>
+              <button
+                onClick={() => {
+                  setActiveQuizId(quiz.id);
+                  setSelectedOption(null);
+                  setShowResult(false);
+                }}
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition"
+              >
+                Start
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+function AddQuizForm({
+  onAdd,
+  onCancel,
+}: {
+  onAdd: (
+    title: string,
+    question: string,
+    options: string[],
+    correctIndex: number
+  ) => void;
+  onCancel: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correctIndex, setCorrectIndex] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (title.trim() && question.trim() && options.every((opt) => opt.trim())) {
+      onAdd(
+        title.trim(),
+        question.trim(),
+        options.map((o) => o.trim()),
+        correctIndex
+      );
+      setTitle("");
+      setQuestion("");
+      setOptions(["", "", "", ""]);
+      setCorrectIndex(0);
+    }
+  };
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index] = value;
+    setOptions(newOptions);
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 bg-gray-50 rounded-lg space-y-3 mb-4"
+    >
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Quiz title (required)"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        autoFocus
+      />
+      <input
+        type="text"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Question (required)"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-600">Options:</p>
+        {options.map((option, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="correctIndex"
+              checked={correctIndex === index}
+              onChange={() => setCorrectIndex(index)}
+              className="w-4 h-4 text-indigo-600"
+            />
+            <input
+              type="text"
+              value={option}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              placeholder={`Option ${index + 1} (required)`}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        ))}
+      </div>
+      <p className="text-sm text-gray-500">
+        Select the correct answer using the radio button
+      </p>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+        >
+          Save Quiz
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function QuizPlayingView({
+  quiz,
+  selectedOption,
+  setSelectedOption,
+  showResult,
+  setShowResult,
+  onBack,
+}: {
+  quiz: IQuiz;
+  selectedOption: number | null;
+  setSelectedOption: (option: number | null) => void;
+  showResult: boolean;
+  setShowResult: (show: boolean) => void;
+  onBack: () => void;
+}) {
+  const isCorrect = selectedOption === quiz.correctIndex;
+  const score = isCorrect ? 100 : 0;
+
+  const handleSubmit = () => {
+    if (selectedOption !== null) {
+      setShowResult(true);
+    }
+  };
+
+  return (
+    <div className="p-4 bg-gray-50 rounded-lg">
+      <h3 className="text-lg font-bold text-gray-900 mb-4">{quiz.title}</h3>
+
+      <p className="text-gray-700 mb-4">{quiz.question}</p>
+
+      {!showResult ? (
+        <>
+          <div className="space-y-2 mb-4">
+            {quiz.options.map((option, index) => (
+              <label
+                key={index}
+                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
+                  selectedOption === index
+                    ? "bg-indigo-100 border-2 border-indigo-500"
+                    : "bg-white border-2 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="quiz-option"
+                  checked={selectedOption === index}
+                  onChange={() => setSelectedOption(index)}
+                  className="w-4 h-4 text-indigo-600"
+                />
+                <span className="text-gray-700">{option}</span>
+              </label>
+            ))}
+          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={selectedOption === null}
+            className={`px-4 py-2 rounded-lg font-medium transition ${
+              selectedOption === null
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+            }`}
+          >
+            Submit answer
+          </button>
+        </>
+      ) : (
+        <div className="space-y-4">
+          <div
+            className={`p-4 rounded-lg ${
+              isCorrect ? "bg-green-100" : "bg-red-100"
+            }`}
+          >
+            <p
+              className={`text-lg font-bold ${
+                isCorrect ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              {isCorrect ? "Correct!" : "Wrong"}
+            </p>
+          </div>
+
+          <div className="p-3 bg-white rounded-lg border border-gray-200">
+            <p className="text-sm font-medium text-gray-600 mb-1">
+              Correct answer:
+            </p>
+            <p className="text-gray-900">{quiz.options[quiz.correctIndex]}</p>
+          </div>
+
+          <div className="p-3 bg-white rounded-lg border border-gray-200">
+            <p className="text-sm font-medium text-gray-600 mb-1">Score:</p>
+            <p className="text-2xl font-bold text-indigo-600">{score}%</p>
+          </div>
+
+          <button
+            onClick={onBack}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition"
+          >
+            Back to list
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

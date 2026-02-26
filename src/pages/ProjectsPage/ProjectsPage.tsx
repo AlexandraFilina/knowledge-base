@@ -8,10 +8,19 @@ import { mockProjects } from "../../features/project/constants/mockProjects";
 import {
   loadProjects,
   saveProjects,
-} from "../../features/project/utils/projectsStorage";
+} from "../../shared/storage/projectsStorage";
+import {
+  createProject,
+  updateProject,
+  deleteProject,
+  nextProjectId,
+  clampProgress,
+} from "../../features/project/utils/projectCrud";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<IProject[]>(() => loadProjects());
+  const [projects, setProjects] = useState<IProject[]>(() =>
+    loadProjects(mockProjects)
+  );
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -34,32 +43,30 @@ export default function ProjectsPage() {
   };
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
-    const maxId = projects.reduce((max, p) => Math.max(max, p.id), 0);
     const newProject: IProject = {
-      id: maxId + 1,
+      id: nextProjectId(projects),
       ...data,
       tags: data.tags,
       image: mockProjects[0]?.image || "",
+      progress: clampProgress(data.progress),
     };
     setIsOpen(false);
-    setProjects([newProject, ...projects]);
+    setProjects((prev) => createProject(prev, newProject));
     setCurrentProject(undefined);
   };
 
   const handleEditProject = (data: IProjectFormValues) => {
-    setProjects(
-      projects.map((p) =>
-        p.id === editingId
-          ? {
-              ...p,
-              title: data.title,
-              description: data.description,
-              tags: data.tags,
-              progress: data.progress,
-            }
-          : p
-      )
-    );
+    const existing = projects.find((p) => p.id === editingId);
+    if (existing) {
+      const updated: IProject = {
+        ...existing,
+        title: data.title,
+        description: data.description,
+        tags: data.tags,
+        progress: clampProgress(data.progress),
+      };
+      setProjects((prev) => updateProject(prev, updated));
+    }
     setIsOpen(false);
     setCurrentProject(undefined);
     setEditingId(null);
@@ -67,7 +74,7 @@ export default function ProjectsPage() {
 
   const projectDelete = (id: number) => {
     if (window.confirm("Delete this card?")) {
-      setProjects(projects.filter((p) => p.id !== id));
+      setProjects((prev) => deleteProject(prev, id));
     }
   };
 
@@ -128,6 +135,7 @@ export default function ProjectsPage() {
               description={item.description}
               image={item.image}
               tags={item.tags}
+              progress={item.progress}
             />
           </div>
         ))}
