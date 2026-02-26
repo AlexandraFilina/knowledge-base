@@ -1,6 +1,6 @@
 import "./ProjectsPage.css";
 import ProjectCardComponent from "../../features/project/components/ProjectCardComponent/ProjectCardComponent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IProject } from "../../features/project/interfaces/IProject";
 import { IProjectFormValues } from "../../features/project/interfaces/IProjectFormValues";
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
@@ -9,6 +9,7 @@ import {
   loadProjects,
   saveProjects,
 } from "../../shared/storage/projectsStorage";
+import { saveQuizzes } from "../../shared/storage/quizzesStorage";
 import {
   createProject,
   updateProject,
@@ -16,6 +17,11 @@ import {
   nextProjectId,
   clampProgress,
 } from "../../features/project/utils/projectCrud";
+import {
+  exportAppData,
+  downloadJson,
+  importAppData,
+} from "../../shared/utils/jsonPortability";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<IProject[]>(() =>
@@ -28,6 +34,9 @@ export default function ProjectsPage() {
   const [currentProject, setCurrentProject] = useState<
     IProjectFormValues | undefined
   >(undefined);
+
+  const [message, setMessage] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     saveProjects(projects);
@@ -94,6 +103,38 @@ export default function ProjectsPage() {
     setIsOpen(true);
   };
 
+  const handleExport = () => {
+    const data = exportAppData();
+    downloadJson("knowledge-base-export.json", data);
+    setMessage("Data exported successfully!");
+    setTimeout(() => setMessage(""), 3000);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const data = await importAppData(file);
+      saveProjects(data.projects);
+      saveQuizzes(data.quizzes);
+      setProjects(data.projects);
+      setMessage("Data imported successfully!");
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Failed to import data"
+      );
+    }
+    setTimeout(() => setMessage(""), 3000);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="p-10 relative">
       <div className="flex justify-center mb-8 gap-4">
@@ -104,12 +145,46 @@ export default function ProjectsPage() {
           + Create theme
         </button>
         <button
+          onClick={handleExport}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
+        >
+          Export data
+        </button>
+        <button
+          onClick={handleImportClick}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
+        >
+          Import data
+        </button>
+        <button
           onClick={handleReset}
           className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
         >
           Reset to defaults
         </button>
       </div>
+
+      {message && (
+        <div className="flex justify-center mb-4">
+          <span
+            className={`px-4 py-2 rounded-full text-sm ${
+              message.includes("success")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {message}
+          </span>
+        </div>
+      )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json"
+        onChange={handleFileChange}
+        className="hidden"
+      />
 
       <div className="flex flex-wrap justify-center gap-6">
         {projects.map((item) => (
