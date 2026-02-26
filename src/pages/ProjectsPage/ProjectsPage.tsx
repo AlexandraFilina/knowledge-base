@@ -1,4 +1,3 @@
-import "./ProjectsPage.css";
 import ProjectCardComponent from "../../features/project/components/ProjectCardComponent/ProjectCardComponent";
 import { useState, useRef } from "react";
 import { IProject } from "../../features/project/interfaces/IProject";
@@ -116,46 +115,112 @@ export default function ProjectsPage() {
     }
   };
 
+  const isSuccessMessage =
+    message.includes("success") ||
+    message.includes("imported") ||
+    message.includes("reset");
+  const isErrorMessage = message.includes("Failed");
+
   return (
-    <div className="p-10 relative">
-      <div className="flex justify-center mb-8 gap-4">
-        <button
-          onClick={onClickAdd}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg"
-        >
-          + Create theme
-        </button>
-        <button
-          onClick={handleExport}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
-        >
-          Export data
-        </button>
-        <button
-          onClick={handleImportClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
-        >
-          Import data
-        </button>
-        <button
-          onClick={handleReset}
-          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-medium transition shadow-lg text-sm"
-        >
-          Reset to defaults
-        </button>
+    <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+          <p className="mt-1 text-sm text-gray-500">Your learning themes</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExport}
+            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 active:scale-[0.99] transition"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+              />
+            </svg>
+            Export
+          </button>
+          <button
+            onClick={handleImportClick}
+            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 active:scale-[0.99] transition"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Import
+          </button>
+          <button
+            onClick={handleReset}
+            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-50 active:scale-[0.99] transition"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={onClickAdd}
+            className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 active:scale-[0.99] transition"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Create theme
+          </button>
+        </div>
       </div>
 
       {message && (
-        <div className="flex justify-center mb-4">
-          <span
-            className={`px-4 py-2 rounded-full text-sm ${
-              message.includes("success")
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
+        <div className="mt-6 flex justify-center">
+          <div
+            className={`rounded-full border px-4 py-2 text-sm shadow-sm ${
+              isSuccessMessage
+                ? "border-green-200 bg-green-50 text-green-700"
+                : isErrorMessage
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-gray-200 bg-white text-gray-700"
             }`}
           >
             {message}
-          </span>
+          </div>
         </div>
       )}
 
@@ -167,21 +232,45 @@ export default function ProjectsPage() {
         className="hidden"
       />
 
-      <div className="flex flex-wrap justify-center gap-6">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((item) => (
           <div key={item.id} className="relative group">
-            <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onClickEdit(item)}
-                className="bg-white/90 p-1.5 rounded-full shadow-sm hover:bg-blue-100"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-sm hover:bg-gray-50"
               >
-                ✏️
+                <svg
+                  className="h-4 w-4 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
               </button>
               <button
                 onClick={() => handleDelete(item.id)}
-                className="bg-white/90 p-1.5 rounded-full shadow-sm hover:bg-red-100"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-sm hover:bg-gray-50"
               >
-                🗑️
+                <svg
+                  className="h-4 w-4 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
               </button>
             </div>
 
