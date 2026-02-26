@@ -33,36 +33,25 @@ export default function ProjectPage() {
   const [projects, setProjects] = useState<IProject[]>(() =>
     loadProjects(mockProjects)
   );
-  const [project, setProject] = useState<IProject | undefined>(() =>
-    projects.find((p) => p.id === projectId)
+  const project = useMemo(
+    () => projects.find((p) => p.id === projectId),
+    [projects, projectId]
   );
   const [quizzes, setQuizzes] = useState<IQuiz[]>(() => loadQuizzes());
 
   useEffect(() => {
     const loaded = loadProjects(mockProjects);
     setProjects(loaded);
-    setProject(loaded.find((p) => p.id === projectId));
   }, [projectId]);
 
-  useEffect(() => {
-    if (project) {
-      const updated = projects.map((p) => (p.id === project.id ? project : p));
-      const existingIndex = projects.findIndex((p) => p.id === project.id);
-      if (existingIndex === -1) {
-        setProjects([project, ...projects]);
-      } else {
-        saveProjects(updated);
-      }
-    }
-  }, [project]);
-
   const handleUpdateProject = (updatedProject: IProject) => {
-    setProject(updatedProject);
-    const updated = projects.map((p) =>
-      p.id === updatedProject.id ? updatedProject : p
-    );
-    setProjects(updated);
-    saveProjects(updated);
+    setProjects((prev) => {
+      const updated = prev.map((p) =>
+        p.id === updatedProject.id ? updatedProject : p
+      );
+      saveProjects(updated);
+      return updated;
+    });
   };
 
   const handleAddQuiz = (
