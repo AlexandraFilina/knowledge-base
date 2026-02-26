@@ -1,22 +1,11 @@
 import "./ProjectsPage.css";
 import ProjectCardComponent from "../../features/project/components/ProjectCardComponent/ProjectCardComponent";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { IProject } from "../../features/project/interfaces/IProject";
 import { IProjectFormValues } from "../../features/project/interfaces/IProjectFormValues";
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
-import { mockProjects } from "../../features/project/constants/mockProjects";
-import {
-  loadProjects,
-  saveProjects,
-} from "../../shared/storage/projectsStorage";
+import { useProjects } from "../../features/project/hooks/useProjects";
 import { saveQuizzes } from "../../shared/storage/quizzesStorage";
-import {
-  createProject,
-  updateProject,
-  deleteProject,
-  nextProjectId,
-  clampProgress,
-} from "../../features/project/utils/projectCrud";
 import {
   exportAppData,
   downloadJson,
@@ -24,9 +13,8 @@ import {
 } from "../../shared/utils/jsonPortability";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<IProject[]>(() =>
-    loadProjects(mockProjects)
-  );
+  const { projects, createProject, updateProject, deleteProject } =
+    useProjects();
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -38,52 +26,33 @@ export default function ProjectsPage() {
   const [message, setMessage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    saveProjects(projects);
-  }, [projects]);
-
   const handleReset = () => {
     if (
       window.confirm("Reset all projects to defaults? This cannot be undone.")
     ) {
       localStorage.removeItem("projects.v1");
-      setProjects(mockProjects);
+      window.location.reload();
     }
   };
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
-    const newProject: IProject = {
-      id: nextProjectId(projects),
-      ...data,
-      tags: data.tags,
-      image: mockProjects[0]?.image || "",
-      progress: clampProgress(data.progress),
-    };
+    createProject(data);
     setIsOpen(false);
-    setProjects((prev) => createProject(prev, newProject));
     setCurrentProject(undefined);
   };
 
   const handleEditProject = (data: IProjectFormValues) => {
-    const existing = projects.find((p) => p.id === editingId);
-    if (existing) {
-      const updated: IProject = {
-        ...existing,
-        title: data.title,
-        description: data.description,
-        tags: data.tags,
-        progress: clampProgress(data.progress),
-      };
-      setProjects((prev) => updateProject(prev, updated));
+    if (editingId !== null) {
+      updateProject(editingId, data);
     }
     setIsOpen(false);
     setCurrentProject(undefined);
     setEditingId(null);
   };
 
-  const projectDelete = (id: number) => {
+  const handleDelete = (id: number) => {
     if (window.confirm("Delete this card?")) {
-      setProjects((prev) => deleteProject(prev, id));
+      deleteProject(id);
     }
   };
 
@@ -120,9 +89,8 @@ export default function ProjectsPage() {
 
     try {
       const data = await importAppData(file);
-      saveProjects(data.projects);
       saveQuizzes(data.quizzes);
-      setProjects(data.projects);
+      window.location.reload();
       setMessage("Data imported successfully!");
     } catch (error) {
       setMessage(
@@ -197,7 +165,7 @@ export default function ProjectsPage() {
                 ✏️
               </button>
               <button
-                onClick={() => projectDelete(item.id)}
+                onClick={() => handleDelete(item.id)}
                 className="bg-white/90 p-1.5 rounded-full shadow-sm hover:bg-red-100"
               >
                 🗑️
