@@ -56,10 +56,15 @@ export function useProjects() {
     setProjects((prev) => deleteProjectHelper(prev, id));
   }, []);
 
+  const refreshProjects = useCallback(() => {
+    setProjects(loadProjects(mockProjects));
+  }, []);
+
   return {
     projects,
     createProject,
     updateProject,
     deleteProject,
+    refreshProjects,
   };
 }

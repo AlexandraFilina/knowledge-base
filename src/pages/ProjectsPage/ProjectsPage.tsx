@@ -6,6 +6,8 @@ import { IProjectFormValues } from "../../features/project/interfaces/IProjectFo
 import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectDialog";
 import { useProjects } from "../../features/project/hooks/useProjects";
 import { saveQuizzes } from "../../shared/storage/quizzesStorage";
+import { saveProjects } from "../../shared/storage/projectsStorage";
+import { mockProjects } from "../../features/project/constants/mockProjects";
 import {
   exportAppData,
   downloadJson,
@@ -13,15 +15,20 @@ import {
 } from "../../shared/utils/jsonPortability";
 
 export default function ProjectsPage() {
-  const { projects, createProject, updateProject, deleteProject } =
-    useProjects();
+  const {
+    projects,
+    createProject,
+    updateProject,
+    deleteProject,
+    refreshProjects,
+  } = useProjects();
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const [currentProject, setCurrentProject] = useState<
-    IProjectFormValues | undefined
-  >(undefined);
+  const [formValues, setFormValues] = useState<IProjectFormValues | undefined>(
+    undefined
+  );
 
   const [message, setMessage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,15 +37,19 @@ export default function ProjectsPage() {
     if (
       window.confirm("Reset all projects to defaults? This cannot be undone.")
     ) {
-      localStorage.removeItem("projects.v1");
-      window.location.reload();
+      saveProjects(mockProjects);
+      saveQuizzes([]);
+      refreshProjects();
+      setMessage("Projects reset to defaults!");
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
     createProject(data);
     setIsOpen(false);
-    setCurrentProject(undefined);
+    setFormValues(undefined);
+    setEditingId(null);
   };
 
   const handleEditProject = (data: IProjectFormValues) => {
@@ -46,7 +57,7 @@ export default function ProjectsPage() {
       updateProject(editingId, data);
     }
     setIsOpen(false);
-    setCurrentProject(undefined);
+    setFormValues(undefined);
     setEditingId(null);
   };
 
@@ -58,7 +69,7 @@ export default function ProjectsPage() {
 
   const onClickEdit = (project: IProject) => {
     setEditingId(project.id);
-    setCurrentProject({
+    setFormValues({
       title: project.title,
       description: project.description,
       tags: project.tags,
@@ -68,7 +79,8 @@ export default function ProjectsPage() {
   };
 
   const onClickAdd = () => {
-    setCurrentProject(undefined);
+    setEditingId(null);
+    setFormValues(undefined);
     setIsOpen(true);
   };
 
@@ -89,8 +101,9 @@ export default function ProjectsPage() {
 
     try {
       const data = await importAppData(file);
+      saveProjects(data.projects);
       saveQuizzes(data.quizzes);
-      window.location.reload();
+      refreshProjects();
       setMessage("Data imported successfully!");
     } catch (error) {
       setMessage(
@@ -107,7 +120,7 @@ export default function ProjectsPage() {
     <div className="p-10 relative">
       <div className="flex justify-center mb-8 gap-4">
         <button
-          onClick={() => onClickAdd()}
+          onClick={onClickAdd}
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-medium transition shadow-lg"
         >
           + Create theme
@@ -184,14 +197,15 @@ export default function ProjectsPage() {
         ))}
       </div>
       <ProjectDialog
-        title={currentProject ? "Edit Project" : "Create Project"}
-        onSave={currentProject ? handleEditProject : handleSaveNewProject}
-        defaultValues={currentProject || undefined}
-        buttonText={currentProject ? "Save Changes" : "Create"}
+        title={editingId !== null ? "Edit Project" : "Create Project"}
+        onSave={editingId !== null ? handleEditProject : handleSaveNewProject}
+        defaultValues={formValues}
+        buttonText={editingId !== null ? "Save Changes" : "Create"}
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false);
           setEditingId(null);
+          setFormValues(undefined);
         }}
       />
     </div>

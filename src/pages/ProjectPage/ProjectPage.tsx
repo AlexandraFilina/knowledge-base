@@ -21,10 +21,8 @@ import { generateId } from "../../shared/utils/id";
 
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
-  const projectId = useMemo(() => {
-    const parsed = parseInt(id || "", 10);
-    return isNaN(parsed) ? null : parsed;
-  }, [id]);
+  const parsed = Number.parseInt(id ?? "", 10);
+  const projectId = Number.isNaN(parsed) ? null : parsed;
 
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [projects, setProjects] = useState<IProject[]>(() =>
