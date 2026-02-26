@@ -28,14 +28,14 @@ export function KnowledgeTab({ project, onUpdateProject }: KnowledgeTabProps) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Knowledge</h2>
+      <h2 className="text-xl font-bold text-stone-900 mb-4">Knowledge</h2>
 
       {project.knowledge && project.knowledge.length > 0 ? (
         <ul className="space-y-3 mb-6">
           {project.knowledge.map((item) => (
             <li
               key={item.id}
-              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+              className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg"
             >
               <span
                 className={`px-2 py-1 text-xs font-medium rounded ${
@@ -48,13 +48,13 @@ export function KnowledgeTab({ project, onUpdateProject }: KnowledgeTabProps) {
               >
                 {item.type}
               </span>
-              <span className="flex-1 text-gray-700">{item.title}</span>
+              <span className="flex-1 text-stone-700">{item.title}</span>
               {item.url && (
                 <a
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-600 hover:text-indigo-800 text-sm"
+                  className="text-rose-700 hover:text-rose-800 text-sm"
                 >
                   Link
                 </a>
@@ -69,7 +69,7 @@ export function KnowledgeTab({ project, onUpdateProject }: KnowledgeTabProps) {
           ))}
         </ul>
       ) : (
-        <p className="text-gray-500 mb-6">
+        <p className="text-stone-500 mb-6">
           No knowledge items yet. Add your first one below.
         </p>
       )}
@@ -112,7 +112,7 @@ function AddKnowledgeForm({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+        className="w-full py-2 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
       >
         + Add knowledge item
       </button>
@@ -122,14 +122,14 @@ function AddKnowledgeForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-gray-50 rounded-lg space-y-3"
+      className="p-4 bg-stone-50 rounded-lg space-y-3"
     >
       <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Title (required)"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
         autoFocus
       />
       <select
@@ -137,7 +137,7 @@ function AddKnowledgeForm({
         onChange={(e) =>
           setType(e.target.value as "article" | "video" | "note")
         }
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
       >
         <option value="article">Article</option>
         <option value="video">Video</option>
@@ -148,12 +148,12 @@ function AddKnowledgeForm({
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder="URL (optional)"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
       />
       <div className="flex gap-2">
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
         >
           Add
         </button>
@@ -164,7 +164,7 @@ function AddKnowledgeForm({
             setTitle("");
             setUrl("");
           }}
-          className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition"
+          className="px-4 py-2 bg-stone-300 hover:bg-stone-400 text-stone-700 rounded-lg font-medium transition"
         >
           Cancel
         </button>

@@ -46,12 +46,12 @@ export function PracticeTab({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Practice</h2>
+      <h2 className="text-xl font-bold text-stone-900 mb-4">Practice</h2>
 
       {!showQuizForm ? (
         <button
           onClick={() => setShowQuizForm(true)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition mb-4"
+          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition mb-4"
         >
           Create Quiz
         </button>
@@ -63,13 +63,13 @@ export function PracticeTab({
       )}
 
       {projectQuizzes.length === 0 ? (
-        <p className="text-gray-500">No quizzes yet</p>
+        <p className="text-stone-500">No quizzes yet</p>
       ) : (
         <ul className="space-y-2">
           {projectQuizzes.map((quiz) => (
             <li
               key={quiz.id}
-              className="p-3 bg-gray-50 rounded-lg text-gray-700 flex justify-between items-center"
+              className="p-3 bg-stone-50 rounded-lg text-stone-700 flex justify-between items-center"
             >
               <span>{quiz.title}</span>
               <button
@@ -136,14 +136,14 @@ function AddQuizForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-gray-50 rounded-lg space-y-3 mb-4"
+      className="p-4 bg-stone-50 rounded-lg space-y-3 mb-4"
     >
       <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Quiz title (required)"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
         autoFocus
       />
       <input
@@ -151,10 +151,10 @@ function AddQuizForm({
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Question (required)"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
       />
       <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-600">Options:</p>
+        <p className="text-sm font-medium text-stone-600">Options:</p>
         {options.map((option, index) => (
           <div key={index} className="flex items-center gap-2">
             <input
@@ -162,32 +162,32 @@ function AddQuizForm({
               name="correctIndex"
               checked={correctIndex === index}
               onChange={() => setCorrectIndex(index)}
-              className="w-4 h-4 text-indigo-600"
+              className="w-4 h-4 text-rose-600"
             />
             <input
               type="text"
               value={option}
               onChange={(e) => handleOptionChange(index, e.target.value)}
               placeholder={`Option ${index + 1} (required)`}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
           </div>
         ))}
       </div>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-stone-500">
         Select the correct answer using the radio button
       </p>
       <div className="flex gap-2">
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
         >
           Save Quiz
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition"
+          className="px-4 py-2 bg-stone-300 hover:bg-stone-400 text-stone-700 rounded-lg font-medium transition"
         >
           Cancel
         </button>
@@ -221,10 +221,10 @@ function QuizPlayingView({
   };
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg">
-      <h3 className="text-lg font-bold text-gray-900 mb-4">{quiz.title}</h3>
+    <div className="p-4 bg-stone-50 rounded-lg">
+      <h3 className="text-lg font-bold text-stone-900 mb-4">{quiz.title}</h3>
 
-      <p className="text-gray-700 mb-4">{quiz.question}</p>
+      <p className="text-stone-700 mb-4">{quiz.question}</p>
 
       {!showResult ? (
         <>
@@ -234,8 +234,8 @@ function QuizPlayingView({
                 key={index}
                 className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
                   selectedOption === index
-                    ? "bg-indigo-100 border-2 border-indigo-500"
-                    : "bg-white border-2 border-gray-200 hover:border-gray-300"
+                    ? "bg-rose-100 border-2 border-rose-500"
+                    : "bg-white border-2 border-stone-200 hover:border-stone-300"
                 }`}
               >
                 <input
@@ -243,9 +243,9 @@ function QuizPlayingView({
                   name="quiz-option"
                   checked={selectedOption === index}
                   onChange={() => setSelectedOption(index)}
-                  className="w-4 h-4 text-indigo-600"
+                  className="w-4 h-4 text-rose-600"
                 />
-                <span className="text-gray-700">{option}</span>
+                <span className="text-stone-700">{option}</span>
               </label>
             ))}
           </div>
@@ -254,8 +254,8 @@ function QuizPlayingView({
             disabled={selectedOption === null}
             className={`px-4 py-2 rounded-lg font-medium transition ${
               selectedOption === null
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                ? "bg-stone-300 text-stone-500 cursor-not-allowed"
+                : "bg-rose-600 hover:bg-rose-700 text-white"
             }`}
           >
             Submit answer
@@ -277,21 +277,21 @@ function QuizPlayingView({
             </p>
           </div>
 
-          <div className="p-3 bg-white rounded-lg border border-gray-200">
-            <p className="text-sm font-medium text-gray-600 mb-1">
+          <div className="p-3 bg-white rounded-lg border border-stone-200">
+            <p className="text-sm font-medium text-stone-600 mb-1">
               Correct answer:
             </p>
-            <p className="text-gray-900">{quiz.options[quiz.correctIndex]}</p>
+            <p className="text-stone-900">{quiz.options[quiz.correctIndex]}</p>
           </div>
 
-          <div className="p-3 bg-white rounded-lg border border-gray-200">
-            <p className="text-sm font-medium text-gray-600 mb-1">Score:</p>
-            <p className="text-2xl font-bold text-indigo-600">{score}%</p>
+          <div className="p-3 bg-white rounded-lg border border-stone-200">
+            <p className="text-sm font-medium text-stone-600 mb-1">Score:</p>
+            <p className="text-2xl font-bold text-rose-600">{score}%</p>
           </div>
 
           <button
             onClick={onBack}
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition"
+            className="px-4 py-2 bg-stone-600 hover:bg-stone-700 text-white rounded-lg font-medium transition"
           >
             Back to list
           </button>

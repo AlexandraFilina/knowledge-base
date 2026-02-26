@@ -125,13 +125,13 @@ export default function ProjectsPage() {
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-          <p className="mt-1 text-sm text-gray-500">Your learning themes</p>
+          <h1 className="text-3xl font-bold text-stone-900">Projects</h1>
+          <p className="mt-1 text-sm text-stone-500">Your learning themes</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={handleExport}
-            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 active:scale-[0.99] transition"
+            className="inline-flex items-center justify-center rounded-2xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 shadow-sm hover:bg-stone-50 active:scale-[0.99] transition"
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -150,7 +150,7 @@ export default function ProjectsPage() {
           </button>
           <button
             onClick={handleImportClick}
-            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 active:scale-[0.99] transition"
+            className="inline-flex items-center justify-center rounded-2xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 shadow-sm hover:bg-stone-50 active:scale-[0.99] transition"
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -169,7 +169,7 @@ export default function ProjectsPage() {
           </button>
           <button
             onClick={handleReset}
-            className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-50 active:scale-[0.99] transition"
+            className="inline-flex items-center justify-center rounded-2xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-500 hover:text-stone-800 hover:bg-stone-50 active:scale-[0.99] transition"
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -188,7 +188,7 @@ export default function ProjectsPage() {
           </button>
           <button
             onClick={onClickAdd}
-            className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 active:scale-[0.99] transition"
+            className="inline-flex items-center justify-center rounded-2xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700 active:scale-[0.99] transition"
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -211,12 +211,12 @@ export default function ProjectsPage() {
       {message && (
         <div className="mt-6 flex justify-center">
           <div
-            className={`rounded-full border px-4 py-2 text-sm shadow-sm ${
+            className={`rounded-2xl border px-4 py-2 text-sm shadow-sm ${
               isSuccessMessage
                 ? "border-green-200 bg-green-50 text-green-700"
                 : isErrorMessage
                 ? "border-red-200 bg-red-50 text-red-700"
-                : "border-gray-200 bg-white text-gray-700"
+                : "border-stone-200 bg-white text-stone-700"
             }`}
           >
             {message}
@@ -238,10 +238,10 @@ export default function ProjectsPage() {
             <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onClickEdit(item)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-sm hover:bg-gray-50"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white/90 shadow-sm hover:bg-stone-50"
               >
                 <svg
-                  className="h-4 w-4 text-gray-600"
+                  className="h-4 w-4 text-stone-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -256,10 +256,10 @@ export default function ProjectsPage() {
               </button>
               <button
                 onClick={() => handleDelete(item.id)}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-sm hover:bg-gray-50"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white/90 shadow-sm hover:bg-stone-50"
               >
                 <svg
-                  className="h-4 w-4 text-gray-600"
+                  className="h-4 w-4 text-stone-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
