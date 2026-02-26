@@ -17,10 +17,7 @@ import { OverviewTab } from "../../features/project/pages/project-page/OverviewT
 import { GoalsTab } from "../../features/project/pages/project-page/GoalsTab";
 import { KnowledgeTab } from "../../features/project/pages/project-page/KnowledgeTab";
 import { PracticeTab } from "../../features/project/pages/project-page/PracticeTab";
-
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
+import { generateId } from "../../shared/utils/id";
 
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
