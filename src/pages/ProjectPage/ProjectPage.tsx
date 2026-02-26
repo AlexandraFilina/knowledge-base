@@ -4,13 +4,13 @@ import { IProject } from "../../features/project/interfaces/IProject";
 import {
   loadProjects,
   saveProjects,
-} from "../../features/project/utils/projectsStorage";
+} from "../../shared/storage/projectsStorage";
 import { mockProjects } from "../../features/project/constants/mockProjects";
 import {
   IQuiz,
   loadQuizzes,
   saveQuizzes,
-} from "../../features/project/utils/quizzesStorage";
+} from "../../shared/storage/quizzesStorage";
 import { TabType } from "../../features/project/pages/project-page/types";
 import { ProjectTabs } from "../../features/project/pages/project-page/ProjectTabs";
 import { OverviewTab } from "../../features/project/pages/project-page/OverviewTab";
