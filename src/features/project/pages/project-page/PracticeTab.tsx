@@ -1,5 +1,11 @@
 import { useState } from "react";
 import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+import {
+  loadQuizAttempts,
+  saveQuizAttempts,
+  QuizAttempt,
+} from "../../../../shared/storage/quizAttemptsStorage";
+import { generateId } from "../../../../shared/utils/id";
 
 interface PracticeTabProps {
   projectId: number;
@@ -21,6 +27,9 @@ export function PracticeTab({
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [attempts, setAttempts] = useState<QuizAttempt[]>(() =>
+    loadQuizAttempts()
+  );
 
   const projectQuizzes = quizzes.filter((q) => q.projectId === projectId);
 
@@ -30,6 +39,7 @@ export function PracticeTab({
       return (
         <QuizPlayingView
           quiz={quiz}
+          projectId={projectId}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           showResult={showResult}
@@ -38,6 +48,13 @@ export function PracticeTab({
             setActiveQuizId(null);
             setSelectedOption(null);
             setShowResult(false);
+          }}
+          onSaveAttempt={(attempt) => {
+            setAttempts((prev) => {
+              const next = [...prev, attempt];
+              saveQuizAttempts(next);
+              return next;
+            });
           }}
         />
       );
@@ -66,32 +83,47 @@ export function PracticeTab({
         <p className="text-stone-500">No quizzes yet</p>
       ) : (
         <ul className="space-y-2">
-          {projectQuizzes.map((quiz) => (
-            <li
-              key={quiz.id}
-              className="p-3 bg-stone-50 rounded-lg text-stone-700 flex justify-between items-center"
-            >
-              <span>{quiz.title}</span>
-              <button
-                onClick={() => {
-                  setActiveQuizId(quiz.id);
-                  setSelectedOption(null);
-                  setShowResult(false);
-                }}
-                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition"
+          {projectQuizzes.map((quiz) => {
+            const quizAttempts = attempts.filter((a) => a.quizId === quiz.id);
+            const lastAttempt =
+              quizAttempts.length > 0
+                ? quizAttempts.reduce((latest, a) =>
+                    new Date(a.createdAt) > new Date(latest.createdAt)
+                      ? a
+                      : latest
+                  )
+                : null;
+            return (
+              <li
+                key={quiz.id}
+                className="p-3 bg-stone-50 rounded-lg text-stone-700 flex justify-between items-center"
               >
-                Start
-              </button>
-            </li>
-          ))}
+                <div>
+                  <span>{quiz.title}</span>
+                  {lastAttempt && (
+                    <p className="text-xs text-stone-500 mt-1">
+                      Last score: {lastAttempt.score}% •{" "}
+                      {new Date(lastAttempt.createdAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveQuizId(quiz.id);
+                    setSelectedOption(null);
+                    setShowResult(false);
+                  }}
+                  className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition"
+                >
+                  Start
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
   );
-}
-
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
 function AddQuizForm({
@@ -198,24 +230,36 @@ function AddQuizForm({
 
 function QuizPlayingView({
   quiz,
+  projectId,
   selectedOption,
   setSelectedOption,
   showResult,
   setShowResult,
   onBack,
+  onSaveAttempt,
 }: {
   quiz: IQuiz;
+  projectId: number;
   selectedOption: number | null;
   setSelectedOption: (option: number | null) => void;
   showResult: boolean;
   setShowResult: (show: boolean) => void;
   onBack: () => void;
+  onSaveAttempt: (attempt: QuizAttempt) => void;
 }) {
   const isCorrect = selectedOption === quiz.correctIndex;
   const score = isCorrect ? 100 : 0;
 
   const handleSubmit = () => {
     if (selectedOption !== null) {
+      const attempt: QuizAttempt = {
+        id: generateId(),
+        quizId: quiz.id,
+        projectId,
+        score,
+        createdAt: new Date().toISOString(),
+      };
+      onSaveAttempt(attempt);
       setShowResult(true);
     }
   };
@@ -287,6 +331,12 @@ function QuizPlayingView({
           <div className="p-3 bg-white rounded-lg border border-stone-200">
             <p className="text-sm font-medium text-stone-600 mb-1">Score:</p>
             <p className="text-2xl font-bold text-rose-600">{score}%</p>
+          </div>
+
+          <div className="p-2 bg-stone-100 rounded-lg">
+            <p className="text-sm text-stone-600">
+              Saved to history • {new Date().toLocaleDateString()}
+            </p>
           </div>
 
           <button
