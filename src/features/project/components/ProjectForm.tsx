@@ -50,12 +50,12 @@ export default function ProjectForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-stone-600 ml-1">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
           Project Name
         </label>
 
         <input
-          className="w-full px-4 py-2.5 rounded-2xl border border-stone-200 outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-stone-400 bg-stone-50/50 resize-none"
+          className="w-full px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
           {...register("title", {
             required: "Title is required",
             minLength: {
@@ -66,13 +66,13 @@ export default function ProjectForm({
           placeholder="e.g. History Exam Preparation"
         />
         {errors.title && (
-          <span className="text-sm text-red-500 ml-1">
+          <span className="text-xs text-rose-700 mt-1">
             {errors.title.message}
           </span>
         )}
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-stone-600 ml-1">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
           Description
         </label>
 
@@ -86,22 +86,22 @@ export default function ProjectForm({
           })}
           placeholder="Reviewing major events of the 20th century..."
           rows={4}
-          className="w-full px-4 py-2.5 rounded-2xl border border-stone-200 outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-stone-400 bg-stone-50/50 resize-none"
+          className="w-full px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
         />
         {errors.description && (
-          <span className="text-sm text-red-500 ml-1">
+          <span className="text-xs text-rose-700 mt-1">
             {errors.description.message}
           </span>
         )}
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-stone-600 ml-1">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
           Progress
         </label>
 
         <input
           type="number"
-          className="w-full px-4 py-2.5 rounded-2xl border border-stone-200 outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all placeholder:text-stone-400 bg-stone-50/50 resize-none"
+          className="w-full px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
           {...register("progress", {
             required: "Progress is required",
             min: {
@@ -117,13 +117,13 @@ export default function ProjectForm({
           placeholder="0-100"
         />
         {errors.progress && (
-          <span className="text-sm text-red-500 ml-1">
+          <span className="text-xs text-rose-700 mt-1">
             {errors.progress.message}
           </span>
         )}
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-stone-600 ml-1">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
           Tags
         </label>
 
@@ -134,13 +134,13 @@ export default function ProjectForm({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-6 py-3 rounded-2xl font-semibold text-stone-500 hover:bg-stone-100 transition"
+          className="flex-1 bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 rounded-full px-5 py-2.5 text-sm font-semibold transition"
         >
           Cancel
         </button>
 
         <button
-          className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-2xl font-medium transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-rose-600 hover:bg-rose-700 text-white rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
           type="submit"
           disabled={!isValid || isSubmitting}
         >
