@@ -5,17 +5,20 @@ export function getQuizStatus(lastScore: number | null): {
   if (lastScore === null) {
     return {
       label: "Not started",
-      className: "bg-stone-200 text-stone-600",
+      className:
+        "inline-flex items-center rounded-full bg-stone-200 px-2 py-0.5 text-xs font-medium text-stone-700",
     };
   }
   if (lastScore >= 70) {
     return {
       label: "Passed",
-      className: "bg-green-100 text-green-700",
+      className:
+        "inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800",
     };
   }
   return {
     label: "Attempted",
-    className: "bg-amber-100 text-amber-700",
+    className:
+      "inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800",
   };
 }
