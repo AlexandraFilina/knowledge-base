@@ -69,6 +69,12 @@ export default function ProjectPage() {
     saveQuizzes(updatedQuizzes);
   };
 
+  const handleDeleteQuiz = (quizId: string) => {
+    const updatedQuizzes = quizzes.filter((q) => q.id !== quizId);
+    setQuizzes(updatedQuizzes);
+    saveQuizzes(updatedQuizzes);
+  };
+
   if (!projectId) {
     return (
       <div className="p-10 text-center">
@@ -151,6 +157,7 @@ export default function ProjectPage() {
               quizzes={quizzes}
               onCreateQuiz={handleAddQuiz}
               onUpdateProject={handleUpdateProject}
+              onDeleteQuiz={handleDeleteQuiz}
             />
           )}
         </div>

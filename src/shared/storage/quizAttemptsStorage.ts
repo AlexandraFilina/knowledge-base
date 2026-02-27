@@ -23,3 +23,9 @@ export function loadQuizAttempts(): QuizAttempt[] {
 export function saveQuizAttempts(attempts: QuizAttempt[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(attempts));
 }
+
+export function deleteAttemptsForQuiz(quizId: string): void {
+  const attempts = loadQuizAttempts();
+  const filtered = attempts.filter((a) => a.quizId !== quizId);
+  saveQuizAttempts(filtered);
+}

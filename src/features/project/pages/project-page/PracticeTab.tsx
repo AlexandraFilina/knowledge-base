@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { IProject } from "../../interfaces/IProject";
-import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+import { IQuiz, deleteQuiz } from "../../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
   saveQuizAttempts,
+  deleteAttemptsForQuiz,
   QuizAttempt,
 } from "../../../../shared/storage/quizAttemptsStorage";
 import {
@@ -25,6 +26,7 @@ interface PracticeTabProps {
     correctIndex: number
   ) => void;
   onUpdateProject: (updatedProject: IProject) => void;
+  onDeleteQuiz: (quizId: string) => void;
 }
 
 export function PracticeTab({
@@ -32,6 +34,7 @@ export function PracticeTab({
   quizzes,
   onCreateQuiz,
   onUpdateProject,
+  onDeleteQuiz,
 }: PracticeTabProps) {
   const [showQuizForm, setShowQuizForm] = useState(false);
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
@@ -140,16 +143,49 @@ export function PracticeTab({
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveQuizId(quiz.id);
-                    setSelectedOption(null);
-                    setShowResult(false);
-                  }}
-                  className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition"
-                >
-                  Start
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Delete this quiz? This will also remove its history."
+                        )
+                      ) {
+                        deleteQuiz(quiz.id);
+                        deleteAttemptsForQuiz(quiz.id);
+                        onDeleteQuiz(quiz.id);
+                        setAttempts((prev) =>
+                          prev.filter((a) => a.quizId !== quiz.id)
+                        );
+                      }
+                    }}
+                    className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Delete quiz"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveQuizId(quiz.id);
+                      setSelectedOption(null);
+                      setShowResult(false);
+                    }}
+                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition"
+                  >
+                    Start
+                  </button>
+                </div>
               </li>
             );
           })}
