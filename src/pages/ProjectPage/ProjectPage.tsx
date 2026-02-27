@@ -122,7 +122,13 @@ export default function ProjectPage() {
         </div>
 
         <div className="p-8">
-          {activeTab === "overview" && <OverviewTab project={project} />}
+          {activeTab === "overview" && (
+            <OverviewTab
+              project={project}
+              projectId={projectId}
+              quizzes={quizzes}
+            />
+          )}
 
           {activeTab === "goals" && (
             <GoalsTab project={project} onUpdateProject={handleUpdateProject} />
