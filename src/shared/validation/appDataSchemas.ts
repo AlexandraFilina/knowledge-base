@@ -17,9 +17,9 @@ export const ProjectSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
-  image: z.string(),
-  tags: z.array(z.string()),
-  progress: z.number(),
+  image: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  progress: z.number().min(0).max(100),
   goal: z.string().optional(),
   subGoals: z.array(ISubGoalSchema).optional(),
   knowledge: z.array(IKnowledgeItemSchema).optional(),
@@ -31,7 +31,7 @@ export const QuizSchema = z.object({
   title: z.string(),
   question: z.string(),
   options: z.array(z.string()).min(2),
-  correctIndex: z.number(),
+  correctIndex: z.number().min(0),
 });
 
 export const AppDataSchema = z.object({
