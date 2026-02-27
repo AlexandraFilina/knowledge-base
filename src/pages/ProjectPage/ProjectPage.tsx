@@ -75,6 +75,14 @@ export default function ProjectPage() {
     saveQuizzes(updatedQuizzes);
   };
 
+  const handleUpdateQuiz = (updatedQuiz: IQuiz) => {
+    const updatedQuizzes = quizzes.map((q) =>
+      q.id === updatedQuiz.id ? updatedQuiz : q
+    );
+    setQuizzes(updatedQuizzes);
+    saveQuizzes(updatedQuizzes);
+  };
+
   if (!projectId) {
     return (
       <div className="p-10 text-center">
@@ -156,6 +164,7 @@ export default function ProjectPage() {
               project={project}
               quizzes={quizzes}
               onCreateQuiz={handleAddQuiz}
+              onUpdateQuiz={handleUpdateQuiz}
               onUpdateProject={handleUpdateProject}
               onDeleteQuiz={handleDeleteQuiz}
             />

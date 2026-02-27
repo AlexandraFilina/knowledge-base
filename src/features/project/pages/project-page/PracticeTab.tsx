@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { IProject } from "../../interfaces/IProject";
-import { IQuiz, deleteQuiz } from "../../../../shared/storage/quizzesStorage";
+import {
+  IQuiz,
+  deleteQuiz,
+  upsertQuiz,
+  saveQuizzes,
+} from "../../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
   saveQuizAttempts,
@@ -33,6 +38,7 @@ interface PracticeTabProps {
     options: string[],
     correctIndex: number
   ) => void;
+  onUpdateQuiz: (updatedQuiz: IQuiz) => void;
   onUpdateProject: (updatedProject: IProject) => void;
   onDeleteQuiz: (quizId: string) => void;
 }
@@ -41,11 +47,13 @@ export function PracticeTab({
   project,
   quizzes,
   onCreateQuiz,
+  onUpdateQuiz,
   onUpdateProject,
   onDeleteQuiz,
 }: PracticeTabProps) {
   const [mode, setMode] = useState<PracticeMode>("quizzes");
   const [showQuizForm, setShowQuizForm] = useState(false);
+  const [editingQuizId, setEditingQuizId] = useState<string | null>(null);
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -217,21 +225,53 @@ export function PracticeTab({
         <>
           <h2 className="text-xl font-bold text-stone-900 mb-4">Practice</h2>
 
-          {!showQuizForm ? (
+          {showQuizForm || editingQuizId ? (
+            <AddQuizForm
+              initialValues={
+                editingQuizId
+                  ? projectQuizzes.find((q) => q.id === editingQuizId)
+                  : undefined
+              }
+              submitLabel={editingQuizId ? "Update Quiz" : "Save Quiz"}
+              onAdd={(title, question, options, correctIndex) => {
+                if (editingQuizId) {
+                  const existingQuiz = projectQuizzes.find(
+                    (q) => q.id === editingQuizId
+                  );
+                  if (existingQuiz) {
+                    const updatedQuiz: IQuiz = {
+                      ...existingQuiz,
+                      title,
+                      question,
+                      options,
+                      correctIndex,
+                    };
+                    upsertQuiz(updatedQuiz);
+                    const updatedQuizzes = quizzes.map((q) =>
+                      q.id === editingQuizId ? updatedQuiz : q
+                    );
+                    saveQuizzes(updatedQuizzes);
+                    onUpdateQuiz(updatedQuiz);
+                  }
+                  setEditingQuizId(null);
+                } else {
+                  onCreateQuiz(title, question, options, correctIndex);
+                }
+                setShowQuizForm(false);
+                setEditingQuizId(null);
+              }}
+              onCancel={() => {
+                setShowQuizForm(false);
+                setEditingQuizId(null);
+              }}
+            />
+          ) : (
             <button
               onClick={() => setShowQuizForm(true)}
               className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition mb-4"
             >
               Create Quiz
             </button>
-          ) : (
-            <AddQuizForm
-              onAdd={(title, question, options, correctIndex) => {
-                onCreateQuiz(title, question, options, correctIndex);
-                setShowQuizForm(false);
-              }}
-              onCancel={() => setShowQuizForm(false)}
-            />
           )}
 
           {projectQuizzes.length === 0 ? (
@@ -274,6 +314,20 @@ export function PracticeTab({
                       )}
                     </div>
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setEditingQuizId(quiz.id)}
+                        className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        title="Edit quiz"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                      </button>
                       <button
                         onClick={() => {
                           if (

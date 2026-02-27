@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface QuizFormValues {
+  title: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
 
 interface AddQuizFormProps {
+  initialValues?: QuizFormValues;
+  submitLabel?: string;
   onAdd: (
     title: string,
     question: string,
@@ -10,11 +19,29 @@ interface AddQuizFormProps {
   onCancel: () => void;
 }
 
-export function AddQuizForm({ onAdd, onCancel }: AddQuizFormProps) {
-  const [title, setTitle] = useState("");
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState(["", "", "", ""]);
-  const [correctIndex, setCorrectIndex] = useState(0);
+export function AddQuizForm({
+  initialValues,
+  submitLabel = "Save Quiz",
+  onAdd,
+  onCancel,
+}: AddQuizFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [question, setQuestion] = useState(initialValues?.question ?? "");
+  const [options, setOptions] = useState<string[]>(
+    initialValues?.options ?? ["", "", "", ""]
+  );
+  const [correctIndex, setCorrectIndex] = useState(
+    initialValues?.correctIndex ?? 0
+  );
+
+  useEffect(() => {
+    if (initialValues) {
+      setTitle(initialValues.title);
+      setQuestion(initialValues.question);
+      setOptions(initialValues.options);
+      setCorrectIndex(initialValues.correctIndex);
+    }
+  }, [initialValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +114,7 @@ export function AddQuizForm({ onAdd, onCancel }: AddQuizFormProps) {
           type="submit"
           className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
         >
-          Save Quiz
+          {submitLabel}
         </button>
         <button
           type="button"
