@@ -131,7 +131,11 @@ export default function ProjectPage() {
           )}
 
           {activeTab === "goals" && (
-            <GoalsTab project={project} onUpdateProject={handleUpdateProject} />
+            <GoalsTab
+              project={project}
+              quizzes={quizzes}
+              onUpdateProject={handleUpdateProject}
+            />
           )}
 
           {activeTab === "knowledge" && (
@@ -143,9 +147,10 @@ export default function ProjectPage() {
 
           {activeTab === "practice" && (
             <PracticeTab
-              projectId={projectId}
+              project={project}
               quizzes={quizzes}
               onCreateQuiz={handleAddQuiz}
+              onUpdateProject={handleUpdateProject}
             />
           )}
         </div>

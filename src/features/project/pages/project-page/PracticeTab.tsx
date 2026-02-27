@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IProject } from "../../interfaces/IProject";
 import { IQuiz } from "../../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
@@ -6,9 +7,14 @@ import {
   QuizAttempt,
 } from "../../../../shared/storage/quizAttemptsStorage";
 import { generateId } from "../../../../shared/utils/id";
+import {
+  computeGoalsProgress,
+  computePracticeProgress,
+  computeOverallProgress,
+} from "../../utils/progress";
 
 interface PracticeTabProps {
-  projectId: number;
+  project: IProject;
   quizzes: IQuiz[];
   onCreateQuiz: (
     title: string,
@@ -16,12 +22,14 @@ interface PracticeTabProps {
     options: string[],
     correctIndex: number
   ) => void;
+  onUpdateProject: (updatedProject: IProject) => void;
 }
 
 export function PracticeTab({
-  projectId,
+  project,
   quizzes,
   onCreateQuiz,
+  onUpdateProject,
 }: PracticeTabProps) {
   const [showQuizForm, setShowQuizForm] = useState(false);
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
@@ -31,7 +39,22 @@ export function PracticeTab({
     loadQuizAttempts()
   );
 
-  const projectQuizzes = quizzes.filter((q) => q.projectId === projectId);
+  const projectQuizzes = quizzes.filter((q) => q.projectId === project.id);
+
+  const updateProgress = () => {
+    const goalsProgress = computeGoalsProgress(project.subGoals);
+    const practiceProgress = computePracticeProgress(
+      project.id,
+      quizzes,
+      attempts
+    );
+    const overallProgress = computeOverallProgress(
+      goalsProgress,
+      practiceProgress
+    );
+    const updatedProject = { ...project, progress: overallProgress };
+    onUpdateProject(updatedProject);
+  };
 
   if (activeQuizId) {
     const quiz = quizzes.find((q) => q.id === activeQuizId);
@@ -39,7 +62,7 @@ export function PracticeTab({
       return (
         <QuizPlayingView
           quiz={quiz}
-          projectId={projectId}
+          projectId={project.id}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           showResult={showResult}
@@ -55,6 +78,21 @@ export function PracticeTab({
               saveQuizAttempts(next);
               return next;
             });
+            setTimeout(() => {
+              const newAttempts = loadQuizAttempts();
+              const goalsProgress = computeGoalsProgress(project.subGoals);
+              const practiceProgress = computePracticeProgress(
+                project.id,
+                quizzes,
+                newAttempts
+              );
+              const overallProgress = computeOverallProgress(
+                goalsProgress,
+                practiceProgress
+              );
+              const updatedProject = { ...project, progress: overallProgress };
+              onUpdateProject(updatedProject);
+            }, 0);
           }}
         />
       );

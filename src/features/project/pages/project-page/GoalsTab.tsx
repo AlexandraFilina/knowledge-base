@@ -1,49 +1,59 @@
 import { useState } from "react";
 import { IProject, ISubGoal } from "../../interfaces/IProject";
+import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+import {
+  loadQuizAttempts,
+  QuizAttempt,
+} from "../../../../shared/storage/quizAttemptsStorage";
+import {
+  computeGoalsProgress,
+  computePracticeProgress,
+  computeOverallProgress,
+} from "../../utils/progress";
 
 interface GoalsTabProps {
   project: IProject;
+  quizzes: IQuiz[];
   onUpdateProject: (updatedProject: IProject) => void;
 }
 
-export function GoalsTab({ project, onUpdateProject }: GoalsTabProps) {
+export function GoalsTab({ project, quizzes, onUpdateProject }: GoalsTabProps) {
+  const [attempts] = useState<QuizAttempt[]>(() => loadQuizAttempts());
+
+  const updateProgress = (subGoals: ISubGoal[]) => {
+    const goalsProgress = computeGoalsProgress(subGoals);
+    const practiceProgress = computePracticeProgress(
+      project.id,
+      quizzes,
+      attempts
+    );
+    const overallProgress = computeOverallProgress(
+      goalsProgress,
+      practiceProgress
+    );
+    const updatedProject = { ...project, subGoals, progress: overallProgress };
+    onUpdateProject(updatedProject);
+  };
+
   const handleToggleSubGoal = (subGoalId: string) => {
     const subGoals =
       project.subGoals?.map((sg) =>
         sg.id === subGoalId ? { ...sg, done: !sg.done } : sg
       ) || [];
-    const doneCount = subGoals.filter((sg) => sg.done).length;
-    const newProgress =
-      subGoals.length > 0
-        ? Math.round((doneCount / subGoals.length) * 100)
-        : project.progress;
-    const updatedProject = { ...project, subGoals, progress: newProgress };
-    onUpdateProject(updatedProject);
+    updateProgress(subGoals);
   };
 
   const handleAddSubGoal = (title: string) => {
     const newSubGoal: ISubGoal = { id: generateId(), title, done: false };
     const subGoals = [...(project.subGoals || []), newSubGoal];
-    const doneCount = subGoals.filter((sg) => sg.done).length;
-    const newProgress =
-      subGoals.length > 0
-        ? Math.round((doneCount / subGoals.length) * 100)
-        : project.progress;
-    const updatedProject = { ...project, subGoals, progress: newProgress };
-    onUpdateProject(updatedProject);
+    updateProgress(subGoals);
   };
 
   const handleDeleteSubGoal = (subGoalId: string) => {
     const subGoals = (project.subGoals || []).filter(
       (sg) => sg.id !== subGoalId
     );
-    const doneCount = subGoals.filter((sg) => sg.done).length;
-    const newProgress =
-      subGoals.length > 0
-        ? Math.round((doneCount / subGoals.length) * 100)
-        : project.progress;
-    const updatedProject = { ...project, subGoals, progress: newProgress };
-    onUpdateProject(updatedProject);
+    updateProgress(subGoals);
   };
 
   return (
