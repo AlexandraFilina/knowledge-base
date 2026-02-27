@@ -3,11 +3,7 @@ import { IQuiz } from "../storage/quizzesStorage";
 import { loadProjects } from "../storage/projectsStorage";
 import { loadQuizzes } from "../storage/quizzesStorage";
 import { mockProjects } from "../../features/project/constants/mockProjects";
-
-export interface AppData {
-  projects: IProject[];
-  quizzes: IQuiz[];
-}
+import { AppDataSchema, AppData } from "../validation/appDataSchemas";
 
 export function exportAppData(): AppData {
   const projects = loadProjects<IProject[]>(mockProjects);
@@ -30,22 +26,19 @@ export function downloadJson(filename: string, data: unknown): void {
 
 export async function importAppData(file: File): Promise<AppData> {
   const text = await file.text();
-  const data = JSON.parse(text);
+  const parsed = JSON.parse(text);
 
-  if (!data || typeof data !== "object") {
-    throw new Error("Invalid file format: expected an object");
+  const result = AppDataSchema.safeParse(parsed);
+
+  if (!result.success) {
+    const errors = result.error.issues
+      .map((issue) => {
+        const path = issue.path.join(".");
+        return `${path}: ${issue.message}`;
+      })
+      .join("; ");
+    throw new Error(`Invalid app data: ${errors}`);
   }
 
-  if (!Array.isArray(data.projects)) {
-    throw new Error("Invalid file format: 'projects' must be an array");
-  }
-
-  if (!Array.isArray(data.quizzes)) {
-    throw new Error("Invalid file format: 'quizzes' must be an array");
-  }
-
-  return {
-    projects: data.projects,
-    quizzes: data.quizzes,
-  };
+  return result.data;
 }
