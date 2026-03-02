@@ -24,10 +24,11 @@ export function useProjects() {
     (data: IProjectFormValues) => {
       const newProject: IProject = {
         id: nextProjectId(projects),
-        ...data,
+        title: data.title,
+        description: data.description,
         tags: data.tags,
         image: mockProjects[0]?.image || "",
-        progress: clampProgress(data.progress),
+        progress: clampProgress(data.progress ?? 0),
       };
       setProjects((prev) => createProjectHelper(prev, newProject));
     },
@@ -44,7 +45,7 @@ export function useProjects() {
           title: data.title,
           description: data.description,
           tags: data.tags,
-          progress: clampProgress(data.progress),
+          progress: clampProgress(data.progress ?? existing.progress),
         };
         return updateProjectHelper(prev, updated);
       });

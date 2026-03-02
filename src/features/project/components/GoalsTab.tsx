@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { IProject, ISubGoal } from "../../../interfaces/IProject";
-import { IQuiz } from "../../../../../shared/storage/quizzesStorage";
+import { IProject, ISubGoal } from "../interfaces/IProject";
+import { IQuiz } from "../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
   QuizAttempt,
-} from "../../../../../shared/storage/quizAttemptsStorage";
+} from "../../../shared/storage/quizAttemptsStorage";
 import {
   computeGoalsProgress,
   computePracticeProgress,
   computeOverallProgress,
-} from "../../../utils/progress";
+} from "../utils/progress";
 
 interface GoalsTabProps {
   project: IProject;

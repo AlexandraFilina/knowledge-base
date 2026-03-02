@@ -37,9 +37,7 @@ export default function ProjectForm({
 
   useEffect(() => {
     if (isOpen) {
-      reset(
-        defaultValues || { title: "", description: "", tags: [], progress: 0 }
-      );
+      reset(defaultValues || { title: "", description: "", tags: [] });
     }
   }, [isOpen, defaultValues, reset]);
 
@@ -91,34 +89,6 @@ export default function ProjectForm({
         {errors.description && (
           <span className="text-xs text-rose-700 mt-1">
             {errors.description.message}
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
-          Progress
-        </label>
-
-        <input
-          type="number"
-          className="w-full px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
-          {...register("progress", {
-            required: "Progress is required",
-            min: {
-              value: 0,
-              message: "Progress must be at least 0",
-            },
-            max: {
-              value: 100,
-              message: "Progress cannot exceed 100",
-            },
-            valueAsNumber: true,
-          })}
-          placeholder="0-100"
-        />
-        {errors.progress && (
-          <span className="text-xs text-rose-700 mt-1">
-            {errors.progress.message}
           </span>
         )}
       </div>

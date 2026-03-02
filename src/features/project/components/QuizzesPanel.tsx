@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { IProject } from "../../../interfaces/IProject";
+import { IProject } from "../interfaces/IProject";
 import {
   IQuiz,
   deleteQuiz,
   upsertQuiz,
   saveQuizzes,
-} from "../../../../../shared/storage/quizzesStorage";
+} from "../../../shared/storage/quizzesStorage";
 import {
   deleteAttemptsForQuiz,
   QuizAttempt,
-} from "../../../../../shared/storage/quizAttemptsStorage";
+} from "../../../shared/storage/quizAttemptsStorage";
 import { AddQuizForm } from "./AddQuizForm";
 import { getQuizStatus } from "../utils/quizStatus";
 

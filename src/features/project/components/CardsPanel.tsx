@@ -4,8 +4,8 @@ import {
   saveFlashcards,
   deleteFlashcard,
   Flashcard,
-} from "../../../../../shared/storage/flashcardsStorage";
-import { generateId } from "../../../../../shared/utils/id";
+} from "../../../shared/storage/flashcardsStorage";
+import { generateId } from "../../../shared/utils/id";
 
 interface CardsPanelProps {
   projectId: number;

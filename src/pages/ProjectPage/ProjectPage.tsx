@@ -12,11 +12,11 @@ import {
   saveQuizzes,
 } from "../../shared/storage/quizzesStorage";
 import { TabType } from "../../features/project/pages/project-page/utils/types";
-import { ProjectTabs } from "../../features/project/pages/project-page/components/ProjectTabs";
-import { OverviewTab } from "../../features/project/pages/project-page/components/OverviewTab";
-import { GoalsTab } from "../../features/project/pages/project-page/components/GoalsTab";
-import { KnowledgeTab } from "../../features/project/pages/project-page/components/KnowledgeTab";
-import { PracticeTab } from "../../features/project/pages/project-page/components/PracticeTab";
+import { ProjectTabs } from "../../features/project/components/ProjectTabs";
+import { OverviewTab } from "../../features/project/components/OverviewTab";
+import { GoalsTab } from "../../features/project/components/GoalsTab";
+import { KnowledgeTab } from "../../features/project/components/KnowledgeTab";
+import { PracticeTab } from "../../features/project/components/PracticeTab";
 import { generateId } from "../../shared/utils/id";
 
 export default function ProjectPage() {
