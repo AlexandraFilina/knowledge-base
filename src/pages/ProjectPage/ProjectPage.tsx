@@ -11,8 +11,6 @@ import {
   loadQuizzes,
   saveQuizzes,
 } from "../../shared/storage/quizzesStorage";
-import { TabType } from "../../features/project/utils/types";
-import { ProjectTabs } from "../../features/project/components/ProjectTabs";
 import { OverviewTab } from "../../features/project/components/OverviewTab";
 import { GoalsTab } from "../../features/project/components/GoalsTab";
 import { KnowledgeTab } from "../../features/project/components/KnowledgeTab";
@@ -25,7 +23,6 @@ export default function ProjectPage() {
   const parsed = Number.parseInt(id ?? "", 10);
   const projectId = Number.isNaN(parsed) ? null : parsed;
 
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [projects, setProjects] = useState<IProject[]>(() =>
     loadProjects(mockProjects)
   );
@@ -104,35 +101,31 @@ export default function ProjectPage() {
           alt={project.title}
         />
 
-        <div className="border-b border-stone-200">
-          <ProjectTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-
-        <div className="p-8">
-          {activeTab === "overview" && (
+        <div className="p-8 space-y-12">
+          <section>
             <OverviewTab
               project={project}
               projectId={projectId}
               quizzes={quizzes}
             />
-          )}
+          </section>
 
-          {activeTab === "goals" && (
+          <section>
             <GoalsTab
               project={project}
               quizzes={quizzes}
               onUpdateProject={handleUpdateProject}
             />
-          )}
+          </section>
 
-          {activeTab === "knowledge" && (
+          <section>
             <KnowledgeTab
               project={project}
               onUpdateProject={handleUpdateProject}
             />
-          )}
+          </section>
 
-          {activeTab === "practice" && (
+          <section>
             <PracticeTab
               project={project}
               quizzes={quizzes}
@@ -141,7 +134,7 @@ export default function ProjectPage() {
               onUpdateProject={handleUpdateProject}
               onDeleteQuiz={handleDeleteQuiz}
             />
-          )}
+          </section>
         </div>
       </div>
     </div>
