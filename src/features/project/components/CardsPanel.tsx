@@ -6,6 +6,7 @@ import {
   Flashcard,
 } from "../../../shared/storage/flashcardsStorage";
 import { generateId } from "../../../shared/utils/id";
+import { FlipCard } from "./FlipCard";
 
 interface CardsPanelProps {
   projectId: number;
@@ -25,7 +26,6 @@ export function CardsPanel({
   const [newBack, setNewBack] = useState("");
   const [studyMode, setStudyMode] = useState(false);
   const [studyIndex, setStudyIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
     saveFlashcards(flashcards);
@@ -41,7 +41,6 @@ export function CardsPanel({
             onClick={() => {
               setStudyMode(false);
               setStudyIndex(0);
-              setShowAnswer(false);
             }}
             className="px-3 py-1.5 text-sm text-stone-600 hover:text-stone-900 transition"
           >
@@ -54,55 +53,30 @@ export function CardsPanel({
           </span>
         </div>
         <div className="max-w-md mx-auto">
-          <div className="bg-stone-50 border border-stone-200 rounded-xl p-8 min-h-[200px] flex items-center justify-center mb-6">
-            <p className="text-lg text-stone-800 text-center">
-              {currentCard.front}
-            </p>
-          </div>
-          {showAnswer && (
-            <div className="bg-rose-50 border border-rose-200 rounded-xl p-8 min-h-[200px] flex items-center justify-center mb-6">
-              <p className="text-lg text-stone-800 text-center">
-                {currentCard.back}
-              </p>
-            </div>
-          )}
-          <div className="flex justify-center gap-3">
-            {!showAnswer ? (
+          <FlipCard front={currentCard.front} back={currentCard.back} />
+          <div className="flex justify-center gap-3 mt-6">
+            <button
+              onClick={() => {
+                if (studyIndex < projectCards.length - 1) {
+                  setStudyIndex((i) => i + 1);
+                } else {
+                  setStudyMode(false);
+                  setStudyIndex(0);
+                }
+              }}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition"
+            >
+              {studyIndex < projectCards.length - 1 ? "Next" : "Finish"}
+            </button>
+            {studyIndex > 0 && (
               <button
-                onClick={() => setShowAnswer(true)}
-                className="px-6 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
+                onClick={() => {
+                  setStudyIndex((i) => i - 1);
+                }}
+                className="px-6 py-2 bg-stone-500 hover:bg-stone-600 text-white rounded-lg font-medium transition"
               >
-                Show answer
+                Previous
               </button>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    if (studyIndex < projectCards.length - 1) {
-                      setStudyIndex((i) => i + 1);
-                      setShowAnswer(false);
-                    } else {
-                      setStudyMode(false);
-                      setStudyIndex(0);
-                      setShowAnswer(false);
-                    }
-                  }}
-                  className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition"
-                >
-                  {studyIndex < projectCards.length - 1 ? "Next" : "Finish"}
-                </button>
-                {studyIndex > 0 && (
-                  <button
-                    onClick={() => {
-                      setStudyIndex((i) => i - 1);
-                      setShowAnswer(false);
-                    }}
-                    className="px-6 py-2 bg-stone-500 hover:bg-stone-600 text-white rounded-lg font-medium transition"
-                  >
-                    Previous
-                  </button>
-                )}
-              </>
             )}
           </div>
         </div>
@@ -127,7 +101,6 @@ export function CardsPanel({
               onClick={() => {
                 setStudyMode(true);
                 setStudyIndex(0);
-                setShowAnswer(false);
               }}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition"
             >
