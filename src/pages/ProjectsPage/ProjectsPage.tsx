@@ -6,6 +6,7 @@ import ProjectDialog from "../../features/project/dialogs/ProjectDialog/ProjectD
 import { useProjects } from "../../features/project/hooks/useProjects";
 import { saveQuizzes } from "../../shared/storage/quizzesStorage";
 import { saveProjects } from "../../shared/storage/projectsStorage";
+import { saveFlashcards } from "../../shared/storage/flashcardsStorage";
 import { mockProjects } from "../../features/project/constants/mockProjects";
 import {
   exportAppData,
@@ -104,6 +105,7 @@ export default function ProjectsPage() {
       const data = await importAppData(file);
       saveProjects(data.projects);
       saveQuizzes(data.quizzes);
+      saveFlashcards(data.flashcards);
       refreshProjects();
       toast.success("Data imported successfully!");
     } catch (error) {

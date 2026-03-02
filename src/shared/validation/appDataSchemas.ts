@@ -34,9 +34,21 @@ export const QuizSchema = z.object({
   correctIndex: z.number().min(0),
 });
 
+export const FlashcardSchema = z.object({
+  id: z.string(),
+  projectId: z.number(),
+  front: z.string(),
+  back: z.string(),
+  createdAt: z.string(),
+  knownCount: z.number(),
+  unknownCount: z.number(),
+  lastReviewedAt: z.string().nullable(),
+});
+
 export const AppDataSchema = z.object({
   projects: z.array(ProjectSchema),
   quizzes: z.array(QuizSchema),
+  flashcards: z.array(FlashcardSchema),
 });
 
 export type AppData = z.infer<typeof AppDataSchema>;

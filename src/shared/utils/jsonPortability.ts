@@ -2,13 +2,15 @@ import { IProject } from "../../features/project/interfaces/IProject";
 import { IQuiz } from "../storage/quizzesStorage";
 import { loadProjects } from "../storage/projectsStorage";
 import { loadQuizzes } from "../storage/quizzesStorage";
+import { loadFlashcards } from "../storage/flashcardsStorage";
 import { mockProjects } from "../../features/project/constants/mockProjects";
 import { AppDataSchema, AppData } from "../validation/appDataSchemas";
 
 export function exportAppData(): AppData {
   const projects = loadProjects<IProject[]>(mockProjects);
   const quizzes = loadQuizzes();
-  return { projects, quizzes };
+  const flashcards = loadFlashcards();
+  return { projects, quizzes, flashcards };
 }
 
 export function downloadJson(filename: string, data: unknown): void {
