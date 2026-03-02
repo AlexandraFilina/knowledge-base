@@ -4,6 +4,9 @@ export type Flashcard = {
   front: string;
   back: string;
   createdAt: string;
+  knownCount: number;
+  unknownCount: number;
+  lastReviewedAt: string | null;
 };
 
 const STORAGE_KEY = "flashcards.v1";

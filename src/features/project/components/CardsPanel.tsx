@@ -57,6 +57,16 @@ export function CardsPanel({
           <div className="flex justify-center gap-3 mt-6">
             <button
               onClick={() => {
+                const updatedCards = flashcards.map((card) =>
+                  card.id === currentCard.id
+                    ? {
+                        ...card,
+                        knownCount: card.knownCount + 1,
+                        lastReviewedAt: new Date().toISOString(),
+                      }
+                    : card
+                );
+                setFlashcards(updatedCards);
                 if (studyIndex < projectCards.length - 1) {
                   setStudyIndex((i) => i + 1);
                 } else {
@@ -66,18 +76,31 @@ export function CardsPanel({
               }}
               className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition"
             >
-              {studyIndex < projectCards.length - 1 ? "Next" : "Finish"}
+              I know
             </button>
-            {studyIndex > 0 && (
-              <button
-                onClick={() => {
-                  setStudyIndex((i) => i - 1);
-                }}
-                className="px-6 py-2 bg-stone-500 hover:bg-stone-600 text-white rounded-lg font-medium transition"
-              >
-                Previous
-              </button>
-            )}
+            <button
+              onClick={() => {
+                const updatedCards = flashcards.map((card) =>
+                  card.id === currentCard.id
+                    ? {
+                        ...card,
+                        unknownCount: card.unknownCount + 1,
+                        lastReviewedAt: new Date().toISOString(),
+                      }
+                    : card
+                );
+                setFlashcards(updatedCards);
+                if (studyIndex < projectCards.length - 1) {
+                  setStudyIndex((i) => i + 1);
+                } else {
+                  setStudyMode(false);
+                  setStudyIndex(0);
+                }
+              }}
+              className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition"
+            >
+              I don't know
+            </button>
           </div>
         </div>
       </div>
@@ -144,6 +167,9 @@ export function CardsPanel({
                     front: newFront.trim(),
                     back: newBack.trim(),
                     createdAt: new Date().toISOString(),
+                    knownCount: 0,
+                    unknownCount: 0,
+                    lastReviewedAt: null,
                   };
                   setFlashcards((prev) => [...prev, newCard]);
                   setNewFront("");
