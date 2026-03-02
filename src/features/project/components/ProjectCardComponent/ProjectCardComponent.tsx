@@ -1,5 +1,5 @@
 import "./ProjectCardComponent.css";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface IProjectProps {
   id: number;
@@ -18,11 +18,13 @@ export default function ProjectCardComponent({
   tags,
   progress = 0,
 }: IProjectProps) {
-  const navigate = useNavigate();
   const clampedProgress = Math.min(100, Math.max(0, progress));
 
   return (
-    <div className="flex flex-col h-full max-w-sm rounded-2xl border border-stone-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition duration-200">
+    <Link
+      to={`/projects/${id}`}
+      className="flex flex-col h-full max-w-sm rounded-2xl border border-stone-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition duration-200 block"
+    >
       {image ? (
         <div className="relative h-44 overflow-hidden rounded-t-2xl flex-shrink-0">
           <img className="w-full h-full object-cover" src={image} alt={title} />
@@ -61,14 +63,8 @@ export default function ProjectCardComponent({
               </span>
             ))}
           </div>
-          <button
-            onClick={() => navigate(`/projects/${id}`)}
-            className="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium py-2 px-4 rounded-2xl transition"
-          >
-            Open
-          </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

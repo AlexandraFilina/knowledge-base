@@ -215,7 +215,10 @@ export default function ProjectsPage() {
           <div key={item.id} className="relative group">
             <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
-                onClick={() => onClickEdit(item)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClickEdit(item);
+                }}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white/90 shadow-sm hover:bg-stone-50"
               >
                 <svg
@@ -233,7 +236,10 @@ export default function ProjectsPage() {
                 </svg>
               </button>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(item.id);
+                }}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white/90 shadow-sm hover:bg-stone-50"
               >
                 <svg
