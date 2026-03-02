@@ -12,6 +12,7 @@ import {
   downloadJson,
   importAppData,
 } from "../../shared/utils/jsonPortability";
+import toast from "react-hot-toast";
 
 export default function ProjectsPage() {
   const {
@@ -29,7 +30,6 @@ export default function ProjectsPage() {
     undefined
   );
 
-  const [message, setMessage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleReset = () => {
@@ -39,13 +39,13 @@ export default function ProjectsPage() {
       saveProjects(mockProjects);
       saveQuizzes([]);
       refreshProjects();
-      setMessage("Projects reset to defaults!");
-      setTimeout(() => setMessage(""), 3000);
+      toast.success("Projects reset to defaults!");
     }
   };
 
   const handleSaveNewProject = (data: IProjectFormValues) => {
     createProject(data);
+    toast.success("Project created successfully!");
     setIsOpen(false);
     setFormValues(undefined);
     setEditingId(null);
@@ -54,6 +54,7 @@ export default function ProjectsPage() {
   const handleEditProject = (data: IProjectFormValues) => {
     if (editingId !== null) {
       updateProject(editingId, data);
+      toast.success("Project updated successfully!");
     }
     setIsOpen(false);
     setFormValues(undefined);
@@ -63,6 +64,7 @@ export default function ProjectsPage() {
   const handleDelete = (id: number) => {
     if (window.confirm("Delete this card?")) {
       deleteProject(id);
+      toast.success("Project deleted!");
     }
   };
 
@@ -86,8 +88,7 @@ export default function ProjectsPage() {
   const handleExport = () => {
     const data = exportAppData();
     downloadJson("knowledge-base-export.json", data);
-    setMessage("Data exported successfully!");
-    setTimeout(() => setMessage(""), 3000);
+    toast.success("Data exported successfully!");
   };
 
   const handleImportClick = () => {
@@ -103,23 +104,16 @@ export default function ProjectsPage() {
       saveProjects(data.projects);
       saveQuizzes(data.quizzes);
       refreshProjects();
-      setMessage("Data imported successfully!");
+      toast.success("Data imported successfully!");
     } catch (error) {
-      setMessage(
+      toast.error(
         error instanceof Error ? error.message : "Failed to import data"
       );
     }
-    setTimeout(() => setMessage(""), 3000);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
-
-  const isSuccessMessage =
-    message.includes("success") ||
-    message.includes("imported") ||
-    message.includes("reset");
-  const isErrorMessage = message.includes("Failed");
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
@@ -207,22 +201,6 @@ export default function ProjectsPage() {
           </button>
         </div>
       </div>
-
-      {message && (
-        <div className="mt-6 flex justify-center">
-          <div
-            className={`rounded-2xl border px-4 py-2 text-sm shadow-sm ${
-              isSuccessMessage
-                ? "border-green-200 bg-green-50 text-green-700"
-                : isErrorMessage
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-stone-200 bg-white text-stone-700"
-            }`}
-          >
-            {message}
-          </div>
-        </div>
-      )}
 
       <input
         ref={fileInputRef}
