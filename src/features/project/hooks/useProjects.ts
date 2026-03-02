@@ -27,7 +27,7 @@ export function useProjects() {
         title: data.title,
         description: data.description,
         tags: data.tags,
-        image: mockProjects[0]?.image || "",
+        image: data.image || mockProjects[0]?.image || "",
         progress: clampProgress(data.progress ?? 0),
       };
       setProjects((prev) => createProjectHelper(prev, newProject));
@@ -45,6 +45,7 @@ export function useProjects() {
           title: data.title,
           description: data.description,
           tags: data.tags,
+          image: data.image || existing.image,
           progress: clampProgress(data.progress ?? existing.progress),
         };
         return updateProjectHelper(prev, updated);

@@ -4,4 +4,5 @@ export interface IProjectFormValues {
   description: string;
   tags: string[];
   progress?: number;
+  image?: string;
 }

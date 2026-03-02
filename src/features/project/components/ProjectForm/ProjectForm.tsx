@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IProjectFormValues } from "../../interfaces/IProjectFormValues";
 import ChipsInput from "../../../../ui/chips-input/ChipsInput";
 
@@ -18,6 +18,10 @@ export default function ProjectForm({
   onSubmit,
   onCancel,
 }: ProjectFormProps) {
+  const [imagePreview, setImagePreview] = useState<string | undefined>(
+    defaultValues?.image
+  );
+
   const {
     register,
     handleSubmit,
@@ -38,11 +42,25 @@ export default function ProjectForm({
   useEffect(() => {
     if (isOpen) {
       reset(defaultValues || { title: "", description: "", tags: [] });
+      setImagePreview(defaultValues?.image);
     }
   }, [isOpen, defaultValues, reset]);
 
   const handleTagsChange = (value: string[]) => {
     setValue("tags", value, { shouldValidate: true, shouldDirty: true });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImagePreview(result);
+        setValue("image", result, { shouldValidate: true, shouldDirty: true });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -98,6 +116,46 @@ export default function ProjectForm({
         </label>
 
         <ChipsInput defaultChips={tagsArray} onChange={handleTagsChange} />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+          Image
+        </label>
+
+        <div className="flex items-center gap-4">
+          {imagePreview ? (
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-stone-200">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : null}
+          <label className="cursor-pointer inline-flex items-center justify-center rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 transition">
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            Upload
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+          </label>
+        </div>
       </div>
 
       <div className="flex gap-3 mt-2">

@@ -75,6 +75,7 @@ export default function ProjectsPage() {
       description: project.description,
       tags: project.tags,
       progress: project.progress,
+      image: project.image,
     });
     setIsOpen(true);
   };
