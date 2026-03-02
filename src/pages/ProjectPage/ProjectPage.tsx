@@ -11,13 +11,14 @@ import {
   loadQuizzes,
   saveQuizzes,
 } from "../../shared/storage/quizzesStorage";
-import { TabType } from "../../features/project/pages/project-page/utils/types";
+import { TabType } from "../../features/project/utils/types";
 import { ProjectTabs } from "../../features/project/components/ProjectTabs";
 import { OverviewTab } from "../../features/project/components/OverviewTab";
 import { GoalsTab } from "../../features/project/components/GoalsTab";
 import { KnowledgeTab } from "../../features/project/components/KnowledgeTab";
 import { PracticeTab } from "../../features/project/components/PracticeTab";
 import { generateId } from "../../shared/utils/id";
+import NotFoundPage from "../NotFoundPage/NotFoundPage";
 
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
@@ -83,36 +84,8 @@ export default function ProjectPage() {
     saveQuizzes(updatedQuizzes);
   };
 
-  if (!projectId) {
-    return (
-      <div className="p-10 text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">
-          Invalid Project ID
-        </h1>
-        <Link
-          to="/projects"
-          className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-2xl font-medium transition shadow-sm inline-block"
-        >
-          Back to Projects
-        </Link>
-      </div>
-    );
-  }
-
-  if (!project) {
-    return (
-      <div className="p-10 text-center">
-        <h1 className="text-2xl font-bold text-stone-600 mb-4">
-          Project not found
-        </h1>
-        <Link
-          to="/projects"
-          className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-2xl font-medium transition shadow-sm inline-block"
-        >
-          Back to Projects
-        </Link>
-      </div>
-    );
+  if (!projectId || !project) {
+    return <NotFoundPage />;
   }
 
   return (

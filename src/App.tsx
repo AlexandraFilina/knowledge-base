@@ -5,6 +5,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import ProjectsPage from "./pages/ProjectsPage/ProjectsPage";
 import ProjectPage from "./pages/ProjectPage/ProjectPage";
+import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route index element={<Navigate to="/projects" replace />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </>
