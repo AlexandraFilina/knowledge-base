@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { IProjectFormValues } from "../interfaces/IProjectFormValues";
-import ChipsInput from "../../../ui/chips-input/ChipsInput";
+import { IProjectFormValues } from "../../interfaces/IProjectFormValues";
+import ChipsInput from "../../../../ui/chips-input/ChipsInput";
 
 export interface ProjectFormProps {
   isOpen: boolean;

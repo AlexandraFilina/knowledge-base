@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
-import { IProject } from "../../interfaces/IProject";
-import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+import { IProject } from "../../../interfaces/IProject";
+import { IQuiz } from "../../../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
   saveQuizAttempts,
   QuizAttempt,
-} from "../../../../shared/storage/quizAttemptsStorage";
+} from "../../../../../shared/storage/quizAttemptsStorage";
 import {
   computeGoalsProgress,
   computePracticeProgress,
   computeOverallProgress,
-} from "../../utils/progress";
+} from "../../../utils/progress";
 import { QuizPlayingView } from "./QuizPlayingView";
-import { PracticeMode } from "./types";
+import { PracticeMode } from "../utils/types";
 import {
   loadFlashcards,
   saveFlashcards,
   Flashcard,
-} from "../../../../shared/storage/flashcardsStorage";
+} from "../../../../../shared/storage/flashcardsStorage";
 import { QuizzesPanel } from "./QuizzesPanel";
 import { CardsPanel } from "./CardsPanel";
 

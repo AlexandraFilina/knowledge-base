@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IProject, IKnowledgeItem } from "../../interfaces/IProject";
+import { IProject, IKnowledgeItem } from "../../../interfaces/IProject";
 
 interface KnowledgeTabProps {
   project: IProject;

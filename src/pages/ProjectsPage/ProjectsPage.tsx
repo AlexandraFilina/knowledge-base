@@ -203,7 +203,7 @@ export default function ProjectsPage() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Create theme
+            Create project
           </button>
         </div>
       </div>

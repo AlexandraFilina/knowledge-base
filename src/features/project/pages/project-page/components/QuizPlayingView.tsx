@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { IQuiz } from "../../../../shared/storage/quizzesStorage";
-import { QuizAttempt } from "../../../../shared/storage/quizAttemptsStorage";
-import { generateId } from "../../../../shared/utils/id";
+import { IQuiz } from "../../../../../shared/storage/quizzesStorage";
+import { QuizAttempt } from "../../../../../shared/storage/quizAttemptsStorage";
+import { generateId } from "../../../../../shared/utils/id";
 
 interface QuizPlayingViewProps {
   quiz: IQuiz;

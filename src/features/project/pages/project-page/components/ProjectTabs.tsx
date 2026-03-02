@@ -1,4 +1,4 @@
-import { TabType } from "./types";
+import { TabType } from "../utils/types";
 
 interface ProjectTabsProps {
   activeTab: TabType;

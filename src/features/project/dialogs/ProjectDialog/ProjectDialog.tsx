@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { IProjectFormValues } from "../../interfaces/IProjectFormValues";
-import ProjectForm from "../../components/ProjectForm";
+import ProjectForm from "../../components/ProjectForm/ProjectForm";
 
 export interface IProjectDialogProps {
   title: string;

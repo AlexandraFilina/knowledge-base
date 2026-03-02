@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { IProject } from "../../interfaces/IProject";
-import { IQuiz } from "../../../../shared/storage/quizzesStorage";
+import { IProject } from "../../../interfaces/IProject";
+import { IQuiz } from "../../../../../shared/storage/quizzesStorage";
 import {
   loadQuizAttempts,
   QuizAttempt,
-} from "../../../../shared/storage/quizAttemptsStorage";
+} from "../../../../../shared/storage/quizAttemptsStorage";
 
 interface OverviewTabProps {
   project: IProject;
