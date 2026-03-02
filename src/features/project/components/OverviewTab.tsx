@@ -5,6 +5,7 @@ import {
   loadQuizAttempts,
   QuizAttempt,
 } from "../../../shared/storage/quizAttemptsStorage";
+import { computeGoalsProgress } from "../utils/progress";
 
 interface OverviewTabProps {
   project: IProject;
@@ -17,6 +18,11 @@ export function OverviewTab({ project, projectId, quizzes }: OverviewTabProps) {
 
   const projectQuizzes = quizzes.filter((q) => q.projectId === projectId);
   const projectAttempts = attempts.filter((a) => a.projectId === projectId);
+
+  const goalsProgress = computeGoalsProgress(project.subGoals);
+  const completedSubGoals =
+    project.subGoals?.filter((sg) => sg.done).length || 0;
+  const totalSubGoals = project.subGoals?.length || 0;
 
   const totalQuizzes = projectQuizzes.length;
   const totalAttempts = projectAttempts.length;
@@ -44,6 +50,24 @@ export function OverviewTab({ project, projectId, quizzes }: OverviewTabProps) {
         <div className="mb-6 p-4 bg-rose-50 rounded-lg border border-rose-100">
           <h3 className="text-sm font-semibold text-rose-800 mb-1">Goal</h3>
           <p className="text-stone-700">{project.goal}</p>
+          {totalSubGoals > 0 && (
+            <div className="mt-3 pt-3 border-t border-rose-200">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-medium text-rose-700">
+                  Subgoals
+                </span>
+                <span className="text-xs font-medium text-rose-700">
+                  {completedSubGoals}/{totalSubGoals} ({goalsProgress}%)
+                </span>
+              </div>
+              <div className="w-full bg-rose-200 rounded-full h-2">
+                <div
+                  className="bg-rose-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${goalsProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
 
