@@ -1,5 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IProject, IKnowledgeItem } from "../interfaces/IProject";
+import {
+  INote,
+  getProjectNotes,
+  addNote,
+  updateNote,
+  deleteNote,
+} from "../../../shared/storage/notesStorage";
+import { RichTextEditor } from "../../../ui/rich-text-editor/RichTextEditor";
 
 interface KnowledgeTabProps {
   project: IProject;
@@ -7,6 +15,16 @@ interface KnowledgeTabProps {
 }
 
 export function KnowledgeTab({ project, onUpdateProject }: KnowledgeTabProps) {
+  const [notes, setNotes] = useState<INote[]>([]);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<INote | null>(null);
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteContent, setNoteContent] = useState("");
+
+  useEffect(() => {
+    setNotes(getProjectNotes(project.id));
+  }, [project.id]);
+
   const handleAddKnowledge = (
     title: string,
     type: "article" | "video" | "note",
@@ -26,52 +44,181 @@ export function KnowledgeTab({ project, onUpdateProject }: KnowledgeTabProps) {
     onUpdateProject(updatedProject);
   };
 
+  const handleOpenEditor = (note?: INote) => {
+    if (note) {
+      setEditingNote(note);
+      setNoteTitle(note.title);
+      setNoteContent(note.content);
+    } else {
+      setEditingNote(null);
+      setNoteTitle("");
+      setNoteContent("");
+    }
+    setIsEditorOpen(true);
+  };
+
+  const handleCloseEditor = () => {
+    setIsEditorOpen(false);
+    setEditingNote(null);
+    setNoteTitle("");
+    setNoteContent("");
+  };
+
+  const handleSaveNote = () => {
+    if (!noteTitle.trim()) return;
+
+    if (editingNote) {
+      updateNote(editingNote.id, noteContent);
+    } else {
+      const newNote: INote = {
+        id: generateId(),
+        projectId: project.id,
+        title: noteTitle.trim(),
+        content: noteContent,
+        createdAt: new Date().toISOString(),
+      };
+      addNote(newNote);
+    }
+
+    setNotes(getProjectNotes(project.id));
+    handleCloseEditor();
+
+    const existingNoteType = project.knowledge?.find(
+      (k) => k.type === "note" && k.title === noteTitle.trim()
+    );
+    if (!existingNoteType) {
+      handleAddKnowledge(noteTitle.trim(), "note");
+    }
+  };
+
+  const handleDeleteNote = (noteId: string, noteTitle: string) => {
+    deleteNote(noteId);
+    setNotes(getProjectNotes(project.id));
+  };
+
+  const getNoteByTitle = (title: string): INote | undefined => {
+    return notes.find((n) => n.title === title);
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-900 mb-4">Knowledge</h2>
 
       {project.knowledge && project.knowledge.length > 0 ? (
         <ul className="space-y-3 mb-6">
-          {project.knowledge.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg"
-            >
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded ${
-                  item.type === "article"
-                    ? "bg-blue-100 text-blue-700"
-                    : item.type === "video"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-green-100 text-green-700"
-                }`}
+          {project.knowledge.map((item) => {
+            const note =
+              item.type === "note" ? getNoteByTitle(item.title) : null;
+            return (
+              <li
+                key={item.id}
+                className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg"
               >
-                {item.type}
-              </span>
-              <span className="flex-1 text-stone-700">{item.title}</span>
-              {item.url && (
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-rose-700 hover:text-rose-800 text-sm"
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded ${
+                    item.type === "article"
+                      ? "bg-blue-100 text-blue-700"
+                      : item.type === "video"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
                 >
-                  Link
-                </a>
-              )}
-              <button
-                onClick={() => handleDeleteKnowledge(item.id)}
-                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
+                  {item.type}
+                </span>
+                <span className="flex-1 text-stone-700">{item.title}</span>
+                {item.type === "note" && note && (
+                  <button
+                    onClick={() => handleOpenEditor(note)}
+                    className="text-rose-600 hover:text-rose-800 text-sm"
+                  >
+                    Edit
+                  </button>
+                )}
+                {item.url && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-rose-700 hover:text-rose-800 text-sm"
+                  >
+                    Link
+                  </a>
+                )}
+                <button
+                  onClick={() => {
+                    if (item.type === "note" && getNoteByTitle(item.title)) {
+                      const noteToDelete = getNoteByTitle(item.title);
+                      if (noteToDelete) {
+                        handleDeleteNote(noteToDelete.id, item.title);
+                      }
+                    }
+                    handleDeleteKnowledge(item.id);
+                  }}
+                  className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                >
+                  ✕
+                </button>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-stone-500 mb-6">
           No knowledge items yet. Add your first one below.
         </p>
+      )}
+
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => handleOpenEditor()}
+          className="py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition"
+        >
+          + Add note
+        </button>
+      </div>
+
+      {isEditorOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-stone-900 mb-4">
+                {editingNote ? "Edit Note" : "New Note"}
+              </h3>
+              <input
+                type="text"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                placeholder="Note title (required)"
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 mb-4"
+                autoFocus
+              />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-stone-700 mb-2">
+                  Content
+                </label>
+                <RichTextEditor
+                  content={noteContent}
+                  onChange={setNoteContent}
+                />
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={handleCloseEditor}
+                  className="px-4 py-2 bg-stone-300 hover:bg-stone-400 text-stone-700 rounded-lg font-medium transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveNote}
+                  disabled={!noteTitle.trim()}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Save Note
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <AddKnowledgeForm onAdd={handleAddKnowledge} />
