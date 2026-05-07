@@ -11,6 +11,13 @@ export interface IKnowledgeItem {
   type: "article" | "video" | "note";
 }
 
+export interface IModule {
+  id: string;
+  title: string;
+  description?: string;
+  goals: ISubGoal[];
+}
+
 export interface IProject {
   id: number;
   title: string;
@@ -21,4 +28,5 @@ export interface IProject {
   goal?: string;
   subGoals?: ISubGoal[];
   knowledge?: IKnowledgeItem[];
+  modules?: IModule[];
 }

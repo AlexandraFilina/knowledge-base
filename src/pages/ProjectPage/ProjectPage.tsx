@@ -17,6 +17,7 @@ import { KnowledgeTab } from "../../features/project/components/KnowledgeTab";
 import { PracticeTab } from "../../features/project/components/PracticeTab";
 import { generateId } from "../../shared/utils/id";
 import NotFoundPage from "../NotFoundPage/NotFoundPage";
+import { ModulesSection } from "../../features/project/pages/project-page/components/ModulesSection";
 
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
@@ -107,6 +108,13 @@ export default function ProjectPage() {
               project={project}
               projectId={projectId}
               quizzes={quizzes}
+            />
+          </section>
+
+          <section>
+            <ModulesSection
+              project={project}
+              onUpdateProject={handleUpdateProject}
             />
           </section>
 
