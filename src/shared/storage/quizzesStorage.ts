@@ -1,6 +1,7 @@
 export interface IQuiz {
   id: string;
   projectId: number;
+  moduleId?: string;
   title: string;
   question: string;
   options: string[];

@@ -12,6 +12,12 @@ import {
 } from "../../shared/storage/projectsStorage";
 import { mockProjects } from "../../features/project/constants/mockProjects";
 import { generateId } from "../../shared/utils/id";
+import {
+  IQuiz,
+  loadQuizzes,
+  upsertQuiz,
+  deleteQuiz,
+} from "../../shared/storage/quizzesStorage";
 import NotFoundPage from "../NotFoundPage/NotFoundPage";
 
 type KnowledgeType = "article" | "video" | "note";
@@ -105,6 +111,43 @@ export default function ModulePage() {
     handleUpdateModule({ ...module, knowledge });
   };
 
+  const [quizzes, setQuizzes] = useState<IQuiz[]>(() => loadQuizzes());
+  const [showQuizForm, setShowQuizForm] = useState(false);
+
+  useEffect(() => {
+    setQuizzes(loadQuizzes());
+  }, [projectId, moduleId]);
+
+  const handleCreateQuiz = (
+    title: string,
+    question: string,
+    options: string[],
+    correctIndex: number
+  ) => {
+    if (!projectIdNum || !moduleId) return;
+    const newQuiz: IQuiz = {
+      id: generateId(),
+      projectId: projectIdNum,
+      moduleId,
+      title,
+      question,
+      options,
+      correctIndex,
+    };
+    upsertQuiz(newQuiz);
+    setQuizzes(loadQuizzes());
+    setShowQuizForm(false);
+  };
+
+  const handleDeleteQuiz = (quizId: string) => {
+    deleteQuiz(quizId);
+    setQuizzes(loadQuizzes());
+  };
+
+  const moduleQuizzes = quizzes.filter(
+    (q) => q.projectId === projectIdNum && q.moduleId === moduleId
+  );
+
   if (!projectIdNum || !moduleId || !project || !module) {
     return <NotFoundPage />;
   }
@@ -140,6 +183,14 @@ export default function ModulePage() {
             knowledge={knowledge}
             onAddKnowledge={handleAddKnowledge}
             onDeleteKnowledge={handleDeleteKnowledge}
+          />
+
+          <ModulePracticeSection
+            quizzes={moduleQuizzes}
+            showQuizForm={showQuizForm}
+            onToggleQuizForm={() => setShowQuizForm(!showQuizForm)}
+            onCreateQuiz={handleCreateQuiz}
+            onDeleteQuiz={handleDeleteQuiz}
           />
         </div>
       </div>
@@ -398,6 +449,156 @@ function KnowledgeSection({
             </button>
           </div>
         </form>
+      )}
+    </div>
+  );
+}
+
+interface ModulePracticeSectionProps {
+  quizzes: IQuiz[];
+  showQuizForm: boolean;
+  onToggleQuizForm: () => void;
+  onCreateQuiz: (
+    title: string,
+    question: string,
+    options: string[],
+    correctIndex: number
+  ) => void;
+  onDeleteQuiz: (quizId: string) => void;
+}
+
+function ModulePracticeSection({
+  quizzes,
+  showQuizForm,
+  onToggleQuizForm,
+  onCreateQuiz,
+  onDeleteQuiz,
+}: ModulePracticeSectionProps) {
+  const [title, setTitle] = useState("");
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState<string[]>(["", "", "", ""]);
+  const [correctIndex, setCorrectIndex] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (title.trim() && question.trim() && options.every((opt) => opt.trim())) {
+      onCreateQuiz(
+        title.trim(),
+        question.trim(),
+        options.map((o) => o.trim()),
+        correctIndex
+      );
+      setTitle("");
+      setQuestion("");
+      setOptions(["", "", "", ""]);
+      setCorrectIndex(0);
+    }
+  };
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index] = value;
+    setOptions(newOptions);
+  };
+
+  return (
+    <div className="mt-10">
+      <h2 className="text-xl font-bold text-stone-900 mb-4">Module Practice</h2>
+
+      {showQuizForm ? (
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 bg-stone-50 rounded-lg space-y-3 mb-4"
+        >
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Quiz title (required)"
+            className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+            autoFocus
+          />
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Question (required)"
+            className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+          />
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-stone-600">Options:</p>
+            {options.map((option, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="correctIndex"
+                  checked={correctIndex === index}
+                  onChange={() => setCorrectIndex(index)}
+                  className="w-4 h-4 text-rose-600"
+                />
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                  placeholder={`Option ${index + 1} (required)`}
+                  className="flex-1 px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-stone-500">
+            Select the correct answer using the radio button
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition"
+            >
+              Save Quiz
+            </button>
+            <button
+              type="button"
+              onClick={onToggleQuizForm}
+              className="px-4 py-2 bg-stone-300 hover:bg-stone-400 text-stone-700 rounded-lg font-medium transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
+        <button
+          onClick={onToggleQuizForm}
+          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition mb-4"
+        >
+          Create Quiz
+        </button>
+      )}
+
+      {quizzes.length === 0 ? (
+        <p className="text-stone-500">No module quizzes yet</p>
+      ) : (
+        <ul className="space-y-2">
+          {quizzes.map((quiz) => (
+            <li
+              key={quiz.id}
+              className="p-3 bg-stone-50 rounded-lg text-stone-700 flex justify-between items-center"
+            >
+              <span className="font-medium">{quiz.title}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => onDeleteQuiz(quiz.id)}
+                  className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                  title="Delete quiz"
+                >
+                  ✕
+                </button>
+                <button className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium transition">
+                  Start
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
