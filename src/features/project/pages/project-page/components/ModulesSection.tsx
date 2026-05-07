@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { IProject, IModule, ISubGoal } from "../../../interfaces/IProject";
+import { generateId } from "../../../../../shared/utils/id";
 
 interface ModulesSectionProps {
   project: IProject;
   onUpdateProject: (updatedProject: IProject) => void;
-}
-
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
 export function ModulesSection({
@@ -52,15 +49,18 @@ export function ModulesSection({
             <ModuleCard
               key={module.id}
               module={module}
+              projectId={String(project.id)}
               onUpdate={handleUpdateModule}
               onDelete={() => handleDeleteModule(module.id)}
             />
           ))}
         </div>
       ) : (
-        <p className="text-stone-500 mb-6">
-          No modules yet. Add your first module below.
-        </p>
+        <div className="bg-stone-50 border border-stone-200 rounded-lg p-8 mb-6 text-center">
+          <p className="text-stone-500">
+            No modules yet. Add your first module below.
+          </p>
+        </div>
       )}
 
       <AddModuleForm onAdd={handleAddModule} />
@@ -70,11 +70,17 @@ export function ModulesSection({
 
 interface ModuleCardProps {
   module: IModule;
+  projectId: string;
   onUpdate: (updatedModule: IModule) => void;
   onDelete: () => void;
 }
 
-function ModuleCard({ module, onUpdate, onDelete }: ModuleCardProps) {
+function ModuleCard({
+  module,
+  projectId,
+  onUpdate,
+  onDelete,
+}: ModuleCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const doneCount = module.goals.filter((g) => g.done).length;
@@ -101,24 +107,35 @@ function ModuleCard({ module, onUpdate, onDelete }: ModuleCardProps) {
   };
 
   return (
-    <div className="bg-stone-50 rounded-lg p-4 border border-stone-200">
+    <div className="group bg-stone-50 rounded-lg p-4 border border-stone-200 hover:border-rose-300 hover:shadow-md transition duration-200">
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
-          <h3 className="font-semibold text-stone-800">{module.title}</h3>
+          <button
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="font-semibold text-stone-800 text-left hover:text-rose-700 transition"
+          >
+            {module.title}
+          </button>
           {module.description && (
             <p className="text-sm text-stone-600 mt-1">{module.description}</p>
           )}
         </div>
         <div className="flex items-center gap-2 ml-4">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-rose-600 hover:text-rose-800 text-sm font-medium"
+          <a
+            href={`/project/${projectId}/module/${module.id}`}
+            className="px-3 py-1 bg-stone-200 hover:bg-stone-300 text-stone-700 text-sm font-medium rounded transition"
           >
-            {isExpanded ? "Close" : "Open module"}
+            Open module
+          </a>
+          <button
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="text-stone-500 hover:text-rose-600 text-sm transition"
+          >
+            {isExpanded ? "Hide goals" : "Show goals"}
           </button>
           <button
             onClick={onDelete}
-            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
           >
             ✕
           </button>
@@ -127,9 +144,12 @@ function ModuleCard({ module, onUpdate, onDelete }: ModuleCardProps) {
 
       <div className="mt-3">
         <div className="flex items-center gap-2 mb-2">
+          <span className="text-xs text-stone-500">Progress</span>
+        </div>
+        <div className="flex items-center gap-2">
           <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-rose-500 transition-all"
+              className="h-full bg-rose-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -140,7 +160,7 @@ function ModuleCard({ module, onUpdate, onDelete }: ModuleCardProps) {
       </div>
 
       {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-stone-200">
+        <div className="mt-4 pt-4 border-t border-stone-200 animate-in fade-in slide-in-from-top-2 duration-200">
           <h4 className="text-sm font-medium text-stone-700 mb-3">Goals</h4>
           {module.goals.length > 0 ? (
             <ul className="space-y-2 mb-4">
@@ -171,8 +191,8 @@ function ModuleCard({ module, onUpdate, onDelete }: ModuleCardProps) {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-stone-500 mb-3">
-              No goals in this module.
+            <p className="text-sm text-stone-400 italic mb-3">
+              No goals yet. Add your first goal below.
             </p>
           )}
           <AddGoalForm onAdd={handleAddGoal} />
