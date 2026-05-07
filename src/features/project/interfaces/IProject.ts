@@ -11,11 +11,21 @@ export interface IKnowledgeItem {
   type: "article" | "video" | "note";
 }
 
+export interface IModuleKnowledgeItem {
+  id: string;
+  title: string;
+  type: "article" | "video" | "note";
+  url?: string;
+  content?: string;
+  createdAt: string;
+}
+
 export interface IModule {
   id: string;
   title: string;
   description?: string;
   goals: ISubGoal[];
+  knowledge?: IModuleKnowledgeItem[];
 }
 
 export interface IProject {

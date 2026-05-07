@@ -19,6 +19,7 @@ export function ModulesSection({
       title,
       description,
       goals: [],
+      knowledge: [],
     };
     const updatedModules = [...modules, newModule];
     const updatedProject = { ...project, modules: updatedModules };
@@ -122,7 +123,7 @@ function ModuleCard({
         </div>
         <div className="flex items-center gap-2 ml-4">
           <a
-            href={`/project/${projectId}/module/${module.id}`}
+            href={`/projects/${projectId}/modules/${module.id}`}
             className="px-3 py-1 bg-stone-200 hover:bg-stone-300 text-stone-700 text-sm font-medium rounded transition"
           >
             Open module
